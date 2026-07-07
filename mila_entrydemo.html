@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Mila - 启智润心</title>
+<style>
+:root {
+  --c-primary:#5B8DB8; --c-primary-dk:#3D5F80; --c-primary-lt:#A8C8E8;
+  --c-mint:#A8E6CF; --c-mint-dk:#7DD3B0;
+  --c-bg:#EEF4FA; --c-bg-warm:#F5F0E8; --c-cream:#FFFDF8;
+  --c-card:#FFFFFF; --c-text:#2D4A3E; --c-text-md:#6B8E7A; --c-text-lt:#9BB5A8;
+  --c-blush:#FFD3B6; --c-blush-lt:#FFE8D6; --c-sky:#B8D4E8; --c-sky-lt:#D6E8F4;
+  --c-lavender:#D4C4E0; --c-lavender-lt:#E8DDF0; --c-gold:#E8C97A;
+  --shadow-sm:0 2px 8px rgba(45,74,62,0.06); --shadow-md:0 4px 20px rgba(45,74,62,0.10);
+  --shadow-lg:0 8px 40px rgba(45,74,62,0.14);
+  --border:rgba(91,141,184,0.10);
+  --font:'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif;
+  --r-sm:8px; --r-md:16px; --r-lg:24px; --r-xl:32px; --r-full:999px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:var(--font);background:var(--c-bg);color:var(--c-text);overflow:hidden;-webkit-font-smoothing:antialiased}
+#app{height:100%;position:relative}
+.view{display:none;height:100%;position:absolute;inset:0;flex-direction:column}
+.view.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeScale{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.fade-in{animation:fadeIn 0.5s ease}
+.slide-up{animation:slideUp 0.6s ease}
+
+/* PAGE 1 LOADING */
+#page-loading{background:linear-gradient(160deg,#E8F4F0 0%,#F0E8F4 30%,#F4F0E8 60%,#E8F0F8 100%);align-items:center;justify-content:center;position:relative;overflow:hidden}
+#page-loading::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(168,230,207,0.15) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(212,196,224,0.12) 0%,transparent 50%),radial-gradient(ellipse at 50% 50%,rgba(255,211,182,0.1) 0%,transparent 60%);z-index:0}
+#page-loading .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.25;z-index:0;animation:float 8s ease-in-out infinite}
+#page-loading .orb:nth-child(1){width:200px;height:200px;background:#A8E6CF;top:-40px;left:-40px;animation-delay:0s}
+#page-loading .orb:nth-child(2){width:160px;height:160px;background:#D4C4E0;bottom:-30px;right:-30px;animation-delay:2s}
+#page-loading .orb:nth-child(3){width:120px;height:120px;background:#FFD3B6;top:40%;right:10%;animation-delay:4s;opacity:0.18}
+.loading-wrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+.clover-wrap{display:flex;flex-direction:column;align-items:center;gap:24px}
+.clover-container{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center}
+.clover-img{position:absolute;inset:0;animation:spin 5s linear infinite;filter:drop-shadow(0 12px 36px rgba(125,211,176,0.35))}
+.clover-img img{width:100%;height:100%;object-fit:contain}
+.clover-brand{font-size:13px;font-weight:500;color:var(--c-text-lt);letter-spacing:6px;text-transform:uppercase;text-shadow:0 1px 8px rgba(255,255,255,0.9);animation:fadeIn 1.5s ease 0.3s both}
+.clover-text{position:relative;z-index:2;text-align:center;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:10px}
+.clover-text .loading-title{font-size:22px;font-weight:700;color:var(--c-primary-dk);letter-spacing:3px;text-shadow:0 2px 12px rgba(255,255,255,0.95),0 0 20px rgba(255,255,255,0.6)}
+.clover-text .loading-subtitle{font-size:14px;font-weight:400;color:var(--c-primary);letter-spacing:4px;text-shadow:0 1px 8px rgba(255,255,255,0.95)}
+.clover-text .loading-line{width:40px;height:2px;border-radius:var(--r-full);background:linear-gradient(90deg,var(--c-mint),var(--c-lavender));margin:6px auto;animation:shimmer 2s linear infinite}
+.loading-dots{display:flex;gap:6px;margin-top:8px}
+.loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--c-primary-lt);animation:pulse 1.4s ease-in-out infinite}
+.loading-dots span:nth-child(2){animation-delay:0.2s}
+.loading-dots span:nth-child(3){animation-delay:0.4s}
+.entrance-links{position:absolute;bottom:28px;left:0;right:0;display:flex;justify-content:space-between;padding:0 20px;z-index:2}
+.entrance-link{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--c-text-lt);text-decoration:none;opacity:0.5;cursor:pointer;transition:opacity 0.3s;padding:5px 10px;border-radius:var(--r-full);background:rgba(255,255,255,0.45);backdrop-filter:blur(4px)}
+.entrance-link:hover{opacity:0.8}
+.entrance-link .dot{width:5px;height:5px;border-radius:50%}
+.entrance-link .dot.g{background:var(--c-blush)}
+.entrance-link .dot.p{background:var(--c-sky)}
+
+/* PAGE 2 CHILD ENTRY */
+#page-child{position:relative;overflow:hidden;align-items:center;justify-content:center;background:linear-gradient(180deg,#E8F0F8 0%,#F5E8F0 50%,#F0F5E8 100%)}
+#page-child::before{content:'';position:absolute;inset:0;background:url('entry_bg_s.jpg') center/cover no-repeat;opacity:0.15;z-index:0}
+.entry-overlay{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
+.entry-mascot{font-size:72px;margin-bottom:16px;animation:bounce 3s ease-in-out infinite;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.08))}
+.entry-greeting{text-align:center;margin-bottom:28px;background:rgba(255,255,255,0.65);backdrop-filter:blur(8px);padding:20px 28px;border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.entry-greeting h1{font-size:30px;font-weight:700;color:var(--c-primary-dk);letter-spacing:1px}
+.entry-greeting p{margin-top:8px;font-size:14px;color:var(--c-text-md)}
+.enter-btn{width:130px;height:46px;border:none;border-radius:var(--r-full);background:linear-gradient(135deg,var(--c-primary) 0%,var(--c-primary-dk) 100%);color:white;font-size:18px;font-weight:600;font-family:var(--font);letter-spacing:4px;cursor:pointer;box-shadow:0 6px 20px rgba(91,141,184,0.30);transition:all 0.3s}
+.enter-btn:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(91,141,184,0.40)}
+.entry-bottom-links{position:absolute;bottom:24px;left:0;right:0;display:flex;justify-content:space-between;padding:0 20px;z-index:2}
+.entry-bottom-link{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--c-text-lt);text-decoration:none;opacity:0.6;cursor:pointer;transition:opacity 0.3s;padding:5px 10px;border-radius:var(--r-full);background:rgba(255,255,255,0.5);backdrop-filter:blur(4px)}
+.entry-bottom-link:hover{opacity:0.9}
+.entry-bottom-link .dot{width:5px;height:5px;border-radius:50%}
+.entry-bottom-link .dot.g{background:var(--c-blush)}
+.entry-bottom-link .dot.p{background:var(--c-sky)}
+
+/* PAGE 1.5 LOGIN */
+#page-login{position:relative;overflow:hidden;align-items:center;justify-content:center;background:linear-gradient(180deg,#E8F0F8 0%,#F5E8F0 50%,#F0F5E8 100%)}
+#page-login::before{content:'';position:absolute;inset:0;background:url('entry_bg_s.jpg') center/cover no-repeat;opacity:0.12;z-index:0}
+.login-overlay{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:0 24px}
+.login-mascot{font-size:80px;margin-bottom:20px;animation:bounce 3s ease-in-out infinite;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.08))}
+.login-greeting{text-align:center;margin-bottom:32px}
+.login-greeting h1{font-size:26px;font-weight:700;color:var(--c-primary-dk);letter-spacing:1px}
+.login-greeting p{margin-top:8px;font-size:14px;color:var(--c-text-md)}
+.login-child-section{width:100%;max-width:280px;display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:40px}
+.login-input-wrap{width:100%;display:flex;flex-direction:column;gap:8px}
+.login-input-wrap label{font-size:13px;color:var(--c-text-md);font-weight:500}
+.login-input-wrap input{width:100%;height:48px;border-radius:var(--r-full);border:2px solid var(--border);padding:0 20px;font-size:15px;font-family:var(--font);background:rgba(255,255,255,0.8);outline:none;color:var(--c-text);transition:all 0.2s;text-align:center}
+.login-input-wrap input:focus{border-color:var(--c-primary-lt);background:var(--c-card);box-shadow:0 0 0 4px rgba(168,200,232,0.15)}
+.login-input-wrap input::placeholder{color:var(--c-text-lt);font-size:13px}
+.login-enter-btn{width:100%;height:50px;border:none;border-radius:var(--r-full);background:linear-gradient(135deg,var(--c-primary) 0%,var(--c-primary-dk) 100%);color:white;font-size:17px;font-weight:700;font-family:var(--font);letter-spacing:4px;cursor:pointer;box-shadow:0 6px 20px rgba(91,141,184,0.30);transition:all 0.3s}
+.login-enter-btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(91,141,184,0.40)}
+.login-enter-btn:disabled{background:var(--c-text-lt);cursor:not-allowed;box-shadow:none;opacity:0.5}
+.login-bottom-links{position:absolute;bottom:24px;left:0;right:0;display:flex;justify-content:space-between;padding:0 20px;z-index:2}
+.login-bottom-link{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--c-text-lt);text-decoration:none;opacity:0.45;cursor:pointer;transition:opacity 0.3s;padding:5px 10px;border-radius:var(--r-full);background:rgba(255,255,255,0.4);backdrop-filter:blur(4px)}
+.login-bottom-link:hover{opacity:0.8}
+.login-bottom-link .dot{width:5px;height:5px;border-radius:50%}
+.login-bottom-link .dot.g{background:var(--c-blush)}
+.login-bottom-link .dot.p{background:var(--c-sky)}
+
+/* PAGE 2 CHILD - 问候语样式 */
+.entry-quote{position:absolute;bottom:28px;left:0;right:0;text-align:center;font-size:12px;color:var(--c-text-lt);font-style:italic;padding:0 30px;z-index:2;opacity:0.7;line-height:1.6}
+
+/* CHAT INPUT MODES */
+
+/* PAGE 3 NEWS */
+#page-news{background:linear-gradient(180deg,#F0E8F8 0%,#E8F0F8 100%);padding-top:48px}
+.news-header{padding:16px 20px 8px;display:flex;align-items:flex-end;justify-content:space-between}
+.news-header-left{flex:1}
+.news-header h1{font-size:22px;font-weight:700;color:var(--c-primary-dk)}
+.news-header p{font-size:13px;color:var(--c-text-md);margin-top:4px}
+.news-enter-btn{padding:8px 18px;border-radius:var(--r-full);background:linear-gradient(135deg,var(--c-primary),var(--c-primary-dk));color:white;font-size:13px;font-weight:600;border:none;cursor:pointer;box-shadow:var(--shadow-sm);white-space:nowrap}
+.news-list{flex:1;overflow-y:auto;padding:0 16px 20px;-webkit-overflow-scrolling:touch}
+.news-card{background:var(--c-card);border-radius:var(--r-lg);padding:18px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.3s}
+.news-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.news-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--c-primary),var(--c-mint))}
+.news-card h3{font-size:15px;font-weight:600;color:var(--c-primary-dk);margin-bottom:6px}
+.news-card p{font-size:13px;color:var(--c-text-md);line-height:1.6}
+.news-card .news-time{font-size:11px;color:var(--c-text-lt);margin-top:8px;display:flex;align-items:center;gap:4px}
+.news-tag{display:inline-block;font-size:10px;padding:2px 10px;border-radius:var(--r-full);background:var(--c-sky-lt);color:var(--c-primary);margin-bottom:6px;font-weight:500}
+
+/* PAGE 4 MAIN HOME */
+#page-main{background:linear-gradient(180deg,#E8F0F8 0%,#F5E8F0 40%,#F0F5E8 100%);position:relative;overflow:hidden}
+.main-top{padding:48px 20px 12px;position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between}
+.main-top .brand{font-size:17px;font-weight:600;color:#3D5F80;display:flex;align-items:center;gap:8px;font-family:"Helvetica Neue",Helvetica,"PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:1px}
+.main-top .brand span{font-size:20px}
+.main-top .brand svg{width:30px;height:30px;filter:drop-shadow(0 1px 2px rgba(61,95,128,.18))}
+.main-top .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--c-blush),var(--c-lavender));display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:var(--shadow-sm)}
+.main-grid{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;padding:0 14px 10px;position:relative;z-index:1}
+.grid-card{border-radius:var(--r-lg);padding:18px 14px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;cursor:pointer;transition:all 0.3s;box-shadow:var(--shadow-sm);border:2px solid rgba(180,160,130,0.35)}
+.grid-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.grid-card .card-bg-img{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover}
+.grid-card .card-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,0.45) 0%,rgba(0,0,0,0.1) 50%,transparent 100%);z-index:1;border-radius:var(--r-lg)}
+.grid-card .card-content{position:relative;z-index:2;color:white}
+.grid-card .card-icon{width:36px;height:36px;flex-shrink:0;margin-bottom:6px;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.3))}
+.grid-card .card-title{font-size:16px;font-weight:700;letter-spacing:1.2px;text-shadow:0 1px 5px rgba(0,0,0,0.45)}
+.grid-card .card-sub{font-size:12px;opacity:0.85;margin-top:3px;text-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.main-chat-bar{position:relative;z-index:1;margin:0 12px 16px;padding:20px 24px;border-radius:var(--r-lg);background:linear-gradient(90deg,#FFD3B6 0%,#E8DDF0 50%,#D6E8F4 100%);display:flex;align-items:center;justify-content:center;gap:14px;cursor:pointer;transition:all 0.3s;box-shadow:0 8px 32px rgba(91,141,184,0.22);border:2px solid rgba(255,255,255,0.8);animation:float 3s ease-in-out infinite;transform:scale(1)}
+.main-chat-bar:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 12px 40px rgba(91,141,184,0.32)}
+.main-chat-bar .chat-icon{font-size:32px;animation:pulse 2s ease-in-out infinite}
+.main-chat-bar .chat-text{font-size:17px;font-weight:800;color:var(--c-primary-dk);letter-spacing:2px}
+.main-chat-bar .chat-sub{font-size:13px;color:var(--c-primary);font-weight:600}
+.chat-badge{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#EE5A5A);color:white;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 2px 6px rgba(238,90,90,0.4)}
+
+/* SUB HEADER */
+.sub-header{padding:48px 16px 14px;display:flex;align-items:center;gap:10px;position:relative;z-index:10}
+.sub-header .back-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-shadow:var(--shadow-sm);border:none}
+.sub-header h1{font-size:18px;font-weight:700;color:var(--c-primary-dk);flex:1}
+.sub-header .sub-action{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-shadow:var(--shadow-sm);border:none}
+.sub-content{flex:1;overflow-y:auto;padding:0 16px 70px;-webkit-overflow-scrolling:touch;position:relative}
+
+/* PAGE 5 MOOD */
+#page-mood{background:linear-gradient(180deg,#E8F0F8 0%,#F5E8F0 100%)}
+.mood-welcome{text-align:center;padding:8px 0 16px}
+.mood-welcome h2{font-size:20px;font-weight:700;color:var(--c-primary-dk)}
+.mood-welcome p{font-size:13px;color:var(--c-text-md);margin-top:4px}
+.mood-emoji-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.mood-emoji-item{display:flex;flex-direction:column;align-items:center;padding:12px 4px;border-radius:var(--r-md);cursor:pointer;transition:all 0.3s;background:rgba(255,255,255,0.6);backdrop-filter:blur(4px);border:1.5px solid transparent}
+.mood-emoji-item:hover{transform:translateY(-3px)}
+.mood-emoji-item.selected{background:rgba(255,255,255,0.95);border-color:var(--c-primary);box-shadow:0 4px 16px rgba(91,141,184,0.15);transform:scale(1.08)}
+.mood-emoji-item .me-emoji{font-size:28px;margin-bottom:3px;transition:all 0.3s}
+.mood-emoji-item.selected .me-emoji{transform:scale(1.15)}
+.mood-emoji-item .me-label{font-size:10px;color:var(--c-text-md);transition:all 0.3s}
+.mood-emoji-item.selected .me-label{color:var(--c-primary);font-weight:600}
+.mood-note-area{background:var(--c-card);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.mood-note-area label{font-size:12px;color:var(--c-text-md);display:flex;align-items:center;gap:4px;margin-bottom:8px}
+.mood-note-area textarea{width:100%;min-height:100px;padding:12px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-family:var(--font);background:var(--c-bg);color:var(--c-text);outline:none;resize:none;line-height:1.6;transition:all 0.2s}
+.mood-note-area textarea:focus{border-color:var(--c-primary-lt);background:var(--c-cream)}
+.mood-save-btn{width:100%;height:44px;border:none;border-radius:var(--r-full);background:linear-gradient(135deg,var(--c-primary),var(--c-primary-dk));color:white;font-size:14px;font-weight:600;cursor:pointer;box-shadow:var(--shadow-sm);transition:all 0.25s;margin-bottom:16px}
+.mood-save-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.mood-history-title{font-size:13px;font-weight:600;color:var(--c-text-md);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.mood-record{border-radius:var(--r-md);padding:12px 14px;margin-bottom:8px;background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);cursor:pointer;transition:all .3s ease;border:1px solid rgba(180,160,130,0.2)}
+.mood-record:hover{background:rgba(255,255,255,0.7)}
+.mood-record .mr-header{display:flex;align-items:center;gap:10px}
+.mood-record .mr-emoji{font-size:24px;flex-shrink:0}
+.mood-record .mr-body{flex:1;min-width:0}
+.mood-record .mr-date{font-size:12px;color:var(--c-text-lt);font-weight:600}
+.mood-record .mr-toggle{font-size:11px;color:var(--c-text-lt);flex-shrink:0;transition:all .2s}
+.mood-record .mr-detail{max-height:0;overflow:hidden;transition:max-height .35s ease,margin .35s ease,opacity .25s ease;opacity:0;font-size:13px;color:var(--c-text-lt);line-height:1.6;margin-top:0;padding-top:0}
+.mood-record:not(.collapsed) .mr-detail{max-height:200px;opacity:1;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(180,160,130,0.3)}
+
+/* PAGE 6 ART */
+#page-art{background:linear-gradient(180deg,#F5E8F0 0%,#E8F0F8 100%)}
+.art-header-actions{display:flex;gap:8px}
+.art-gen-btn{padding:8px 16px;border-radius:var(--r-full);background:linear-gradient(135deg,var(--c-primary),var(--c-primary-dk));color:white;font-size:12px;font-weight:600;border:none;cursor:pointer;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:4px;transition:all 0.25s}
+.art-gen-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.art-gen-btn:active{transform:scale(0.96)}
+.art-gallery{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-bottom:16px}
+.art-card{border-radius:var(--r-lg);overflow:hidden;background:var(--c-card);box-shadow:var(--shadow-sm);border:1px solid var(--border);position:relative;transition:all 0.3s;cursor:pointer}
+.art-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.art-card img{width:100%;height:180px;object-fit:cover;display:block}
+.art-card .art-info{padding:10px 12px;display:flex;align-items:center;justify-content:space-between}
+.art-card .art-title{font-size:12px;font-weight:600;color:var(--c-primary-dk)}
+.art-card .art-fav{width:30px;height:30px;border-radius:50%;border:none;background:transparent;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.art-card .art-fav:hover{background:var(--c-blush-lt);transform:scale(1.1)}
+.art-card .art-fav.saved{color:#E74C3C}
+.art-card .art-tag{position:absolute;top:8px;left:8px;font-size:10px;padding:3px 10px;border-radius:var(--r-full);background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);color:var(--c-text-md);font-weight:500}
+.art-fav-section{margin-top:16px}
+.art-fav-title{font-size:13px;font-weight:600;color:var(--c-text-md);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.art-empty{text-align:center;padding:40px 20px;color:var(--c-text-lt);font-size:13px}
+.art-empty .empty-icon{font-size:40px;margin-bottom:8px}
+
+/* PAGE 7 STUDIO */
+#page-studio{background:linear-gradient(180deg,#F0F5E8 0%,#E8F0F8 100%)}
+.studio-tools{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-bottom:16px}
+.studio-card{background:var(--c-card);border-radius:var(--r-lg);padding:18px 14px;text-align:center;cursor:pointer;transition:all 0.3s;box-shadow:var(--shadow-sm);border:1px solid var(--border);position:relative;overflow:hidden}
+.studio-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.studio-card .st-icon{font-size:36px;margin-bottom:10px;transition:all 0.3s}
+.studio-card:hover .st-icon{transform:scale(1.1)}
+.studio-card .st-name{font-size:14px;font-weight:600;color:var(--c-primary-dk);margin-bottom:4px}
+.studio-card .st-desc{font-size:11px;color:var(--c-text-md);line-height:1.5}
+.studio-card .st-bg{position:absolute;inset:0;opacity:0.05;z-index:0}
+.studio-card .st-bg-1{background:linear-gradient(135deg,var(--c-mint),var(--c-sky))}
+.studio-card .st-bg-2{background:linear-gradient(135deg,var(--c-blush),var(--c-lavender))}
+.studio-card .st-bg-3{background:linear-gradient(135deg,var(--c-sky),var(--c-mint))}
+.studio-card .st-bg-4{background:linear-gradient(135deg,var(--c-lavender),var(--c-blush))}
+.studio-card .st-bg-5{background:linear-gradient(135deg,var(--c-gold),var(--c-blush))}
+.studio-card .st-bg-6{background:linear-gradient(135deg,var(--c-mint),var(--c-gold))}
+.studio-card>*{position:relative;z-index:1}
+
+/* PAGE 8 BLOG */
+#page-blog{background:linear-gradient(180deg,#E8F8F0 0%,#F0E8F8 100%)}
+.blog-new-btn{width:100%;height:48px;border:none;border-radius:var(--r-lg);background:linear-gradient(135deg,var(--c-primary),var(--c-primary-dk));color:white;font-size:14px;font-weight:600;cursor:pointer;box-shadow:var(--shadow-sm);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.25s}
+.blog-new-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.blog-list{padding-bottom:16px}
+.blog-item{background:var(--c-card);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border:1px solid var(--border);cursor:pointer;transition:all 0.25s}
+.blog-item:hover{transform:translateX(4px);box-shadow:var(--shadow-md)}
+.blog-item .bi-title{font-size:14px;font-weight:600;color:var(--c-primary-dk);margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.blog-item .bi-preview{font-size:12px;color:var(--c-text-md);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
+.blog-item .bi-meta{display:flex;align-items:center;gap:10px;font-size:10px;color:var(--c-text-lt)}
+.blog-editor{display:none;flex-direction:column;height:100%}
+.blog-editor.active{display:flex}
+.blog-editor-input{width:100%;padding:14px 16px;border:none;border-bottom:1px solid var(--border);font-size:16px;font-weight:600;font-family:var(--font);background:transparent;outline:none;color:var(--c-primary-dk)}
+.blog-editor-textarea{flex:1;width:100%;padding:14px 16px;border:none;font-size:14px;font-family:var(--font);background:transparent;outline:none;color:var(--c-text);resize:none;line-height:1.7}
+.blog-editor-bar{padding:12px 16px;display:flex;gap:10px;border-top:1px solid var(--border);background:rgba(255,255,255,0.7);backdrop-filter:blur(8px)}
+.blog-editor-bar button{flex:1;height:40px;border-radius:var(--r-full);border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s}
+.blog-save{background:linear-gradient(135deg,var(--c-primary),var(--c-primary-dk));color:white}
+.blog-cancel{background:var(--c-bg);color:var(--c-text-md)}
+
+/* PAGE 9 CHAT — Warm Cozy Redesign */
+#page-chat{background:#F5F0E8;position:relative}
+#page-chat .chat-deco{position:absolute;z-index:0;pointer-events:none;font-size:24px;opacity:0.2}
+#page-chat .chat-deco.d1{top:15%;right:8%;font-size:20px;opacity:0.15}
+#page-chat .chat-deco.d2{top:35%;left:6%;font-size:22px;opacity:0.18}
+#page-chat .chat-deco.d3{top:55%;right:10%;font-size:18px;opacity:0.14}
+#page-chat .chat-deco.d4{top:78%;left:8%;font-size:20px;opacity:0.16}
+#page-chat .chat-deco.d5{top:10%;left:12%;font-size:16px;opacity:0.12}
+/* New header for chat page */
+.chat-header{position:relative;z-index:2;padding:48px 16px 12px;display:flex;align-items:center;gap:12px}
+.chat-header .chat-back{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-shadow:var(--shadow-sm);border:none}
+.chat-header .chat-avatar{width:38px;height:38px;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1);flex-shrink:0;overflow:hidden}
+.chat-header .chat-avatar img{width:100%;height:100%;object-fit:cover}
+.chat-header .chat-brand{font-family:'Georgia','Times New Roman',serif;font-size:18px;font-weight:700;color:#4A3728;letter-spacing:2px}
+.chat-header .chat-status{font-size:10px;color:#A0897A;margin-left:auto;display:flex;align-items:center;gap:4px}
+.chat-header .chat-status .online-dot{width:6px;height:6px;border-radius:50%;background:#7DD3B0;display:inline-block;animation:pulse 2s infinite}
+/* Messages area */
+.chat-messages{flex:1;overflow-y:auto;padding:0 14px 10px;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.chat-bubble{max-width:76%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6;word-break:break-word;animation:fadeIn 0.35s ease;position:relative;letter-spacing:0.3px}
+.chat-bubble.mila{align-self:flex-start;background:#8BA89C;color:white;border-bottom-left-radius:4px;box-shadow:0 2px 8px rgba(139,168,156,0.25)}
+.chat-bubble.user{align-self:flex-end;background:#E8D4C4;color:#4A3728;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(232,212,196,0.3)}
+.chat-bubble .bubble-time{font-size:9px;opacity:0.55;margin-top:6px;text-align:right}
+.chat-bubble.mila .bubble-time{color:rgba(255,255,255,0.6)}
+.chat-bubble.user .bubble-time{color:#A0897A}
+.chat-typing{display:none;align-self:flex-start;margin-left:14px;padding:12px 18px;background:#8BA89C;border-radius:18px;border-bottom-left-radius:4px;font-size:20px;color:white;letter-spacing:4px;position:relative;z-index:1;box-shadow:0 2px 8px rgba(139,168,156,0.25)}
+.chat-typing.show{display:flex;gap:2px}
+.chat-typing span{animation:pulse 1.2s infinite}
+.chat-typing span:nth-child(2){animation-delay:0.2s}
+.chat-typing span:nth-child(3){animation-delay:0.4s}
+/* Input area */
+.chat-input-wrap{position:relative;z-index:2;padding:8px 14px 16px;background:rgba(245,240,232,0.85);backdrop-filter:blur(8px)}
+.chat-input-row{display:flex;align-items:center;gap:8px;background:white;border-radius:24px;padding:4px 4px 4px 16px;box-shadow:0 2px 12px rgba(0,0,0,0.04),0 0 0 1px rgba(0,0,0,0.03)}
+.chat-input-row input{flex:1;height:40px;border:none;background:transparent;outline:none;font-size:13px;font-family:var(--font);color:#4A3728}
+.chat-input-row input::placeholder{color:#C5B8AD}
+.chat-input-row .chat-actions{display:flex;align-items:center;gap:2px;flex-shrink:0}
+.chat-input-row .chat-action-btn{width:36px;height:36px;border-radius:50%;border:none;background:transparent;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;color:#A0897A}
+.chat-input-row .chat-action-btn:hover{background:rgba(139,168,156,0.1);transform:scale(1.05)}
+.chat-input-row .chat-action-btn:active{transform:scale(0.93)}
+.chat-input-row .chat-send-btn{width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg,#8BA89C,#6C8D80);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s;color:white;box-shadow:0 2px 6px rgba(108,141,128,0.25)}
+.chat-input-row .chat-send-btn:hover{transform:scale(1.08);box-shadow:0 4px 12px rgba(108,141,128,0.35)}
+.chat-input-row .chat-send-btn:active{transform:scale(0.93)}
+
+/* TOAST */
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(45,74,62,0.88);backdrop-filter:blur(8px);color:white;padding:10px 20px;border-radius:var(--r-full);font-size:13px;z-index:1000;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* BOTTOM NAV */
+.sub-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:5px 0 calc(5px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;align-items:center;z-index:200;box-shadow:0 -4px 16px rgba(45,74,62,0.04)}
+.sub-nav-item{display:flex;flex-direction:column;align-items:center;padding:3px 6px;border-radius:var(--r-md);cursor:pointer;transition:all 0.2s;min-width:48px}
+.sub-nav-item .sn-icon{font-size:19px;margin-bottom:1px;transition:all 0.2s;filter:grayscale(0.3);opacity:0.6}
+.sub-nav-item .sn-label{font-size:10px;color:var(--c-text-lt);transition:all 0.2s}
+.sub-nav-item.active{background:rgba(91,141,184,0.07)}
+.sub-nav-item.active .sn-icon{transform:scale(1.1);filter:grayscale(0);opacity:1}
+.sub-nav-item.active .sn-label{color:var(--c-primary);font-weight:500}
+
+/* PAGE 10: GUARDIAN PORTAL */
+#page-guardian{background:#F5F5F0;font-family:'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif}
+.guard-header{background:#1a2744;padding:48px 20px 14px;text-align:center}
+.guard-header h1{font-size:18px;font-weight:600;color:white;letter-spacing:2px;margin:0}
+.guard-date-wrap{padding:8px 20px 4px;background:#F5F5F0}
+.guard-date{font-size:12px;color:#C5B8AD;letter-spacing:1px}
+.guard-content{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;padding:12px 16px 28px;overflow-y:auto;background:#F5F5F0}
+.guard-cards{display:flex;gap:12px;flex-shrink:0}
+.guard-card{flex:1;border-radius:10px;padding:36px 14px;cursor:pointer;text-align:center;transition:all 0.2s;position:relative;min-height:120px;display:flex;align-items:flex-end;justify-content:center}
+.guard-card.report{background:#1a2744}
+.guard-card.alert{background:#7B202F}
+.guard-card:active{transform:scale(0.97);opacity:0.92}
+.guard-card .gc-label{font-size:15px;font-weight:600;color:white;letter-spacing:1.5px}
+.guard-settings{display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.guard-setting-item{display:flex;align-items:center;justify-content:space-between;background:white;border-radius:8px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.04);min-height:52px}
+.guard-setting-item .gs-label{font-size:14px;color:#1a2744;font-weight:500}
+.guard-setting-item .gs-btn{padding:7px 22px;border-radius:6px;border:none;background:#E0DDD6;color:#1a2744;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:inherit}
+.guard-setting-item .gs-btn:active{transform:scale(0.96);opacity:0.8}
+.guard-footer{text-align:center;padding:4px 0;flex-shrink:0}
+.guard-footer a{font-size:12px;color:#A0897A;text-decoration:none;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.5px}
+.guard-footer a:hover{opacity:0.7}
+
+
+/* PAGE 11: PROFESSIONAL PORTAL */
+#page-professional{background:#FFFFFF;font-family:'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif;position:relative}
+.pro-header{background:#0A1628;padding:48px 20px 32px;position:relative;overflow:hidden;flex-shrink:0}
+.pro-header::after{content:'';position:absolute;bottom:0;left:-10%;right:-10%;height:36px;background:#FFFFFF;border-radius:50% 50% 0 0}
+.pro-header-inner{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.pro-header h1{font-size:18px;font-weight:600;color:white;letter-spacing:2px;margin:0}
+.pro-header .pro-date{font-size:12px;color:rgba(255,255,255,0.75);letter-spacing:0.5px;white-space:nowrap;margin-top:2px}
+.pro-content{flex:1;padding:8px 16px 28px;overflow-y:auto;background:#FFFFFF}
+.pro-top-row{display:flex;gap:10px;margin-bottom:20px}
+.pro-left-col{flex:0 0 38%;display:flex;flex-direction:column;gap:10px}
+.pro-left-btn{background:#0A1628;border-radius:10px;padding:24px 12px;cursor:pointer;text-align:center;transition:all 0.2s;border:none;flex:1;display:flex;align-items:center;justify-content:center}
+.pro-left-btn:active{transform:scale(0.97);opacity:0.9}
+.pro-left-btn .plb-label{font-size:15px;font-weight:600;color:white;letter-spacing:2px}
+.pro-right-card{flex:1;background:linear-gradient(135deg,#00C9A7 0%,#00B4D8 100%);border-radius:10px;padding:24px 16px;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;justify-content:space-between;min-height:120px}
+.pro-right-card:active{transform:scale(0.97);opacity:0.92}
+.pro-right-card .prc-title{font-size:15px;font-weight:600;color:white;letter-spacing:1px}
+.pro-right-card .prc-icon{width:32px;height:32px;align-self:flex-end;margin-top:12px}
+.pro-right-card .prc-icon svg{width:100%;height:100%}
+.pro-list{display:flex;flex-direction:column;gap:0;margin-bottom:16px}
+.pro-list-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #F0F0F2;min-height:52px}
+.pro-list-item:last-child{border-bottom:none}
+.pro-list-item .pli-label{font-size:14px;color:#0A1628;font-weight:500}
+.pro-list-item .pli-btn{padding:6px 20px;border-radius:20px;border:none;background:#F5F5F7;color:#0A1628;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:inherit}
+.pro-list-item .pli-btn:active{transform:scale(0.96);opacity:0.8}
+.pro-footer{text-align:right;padding:8px 16px 4px}
+.pro-footer a{font-size:12px;color:#0A1628;text-decoration:none;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.5px}
+.pro-footer a:hover{opacity:0.7}
+
+
+/* GUARDIAN ALERTS & LOGS */
+.guard-alert-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:linear-gradient(90deg,#8B3020,#A84030);border-radius:8px;margin:0 16px 12px;cursor:pointer;transition:all 0.2s;position:relative}
+.guard-alert-bar:active{transform:scale(0.98);opacity:0.9}
+.guard-alert-bar .ga-bar-text{color:white;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px}
+.guard-alert-bar .ga-bar-badge{width:20px;height:20px;border-radius:50%;background:white;color:#8B3020;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.guard-alert-bar .ga-bar-arrow{color:white;font-size:12px;opacity:0.7}
+.ga-panel{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:500;display:none;align-items:flex-end;justify-content:center}
+.ga-panel.active{display:flex}
+.ga-panel-inner{width:100%;max-width:420px;height:75%;background:#F5F0E0;border-radius:20px 20px 0 0;overflow:hidden;display:flex;flex-direction:column;animation:slideUp 0.3s ease}
+.ga-panel-header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,0.06)}
+.ga-panel-header h2{font-size:16px;font-weight:600;color:#1a2744;margin:0}
+.ga-panel-header .ga-close{font-size:20px;color:#A0897A;cursor:pointer;padding:4px}
+.ga-panel-list{flex:1;overflow-y:auto;padding:8px 16px}
+.ga-item{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.04);cursor:pointer;transition:all 0.2s}
+.ga-item:last-child{border-bottom:none}
+.ga-item.unread .ga-dot{width:8px;height:8px;border-radius:50%;background:#8B3020;margin-top:5px;flex-shrink:0}
+.ga-item.read .ga-dot{width:8px;height:8px;border-radius:50%;background:#C5B8AD;margin-top:5px;flex-shrink:0}
+.ga-item.high .ga-title{color:#8B3020}
+.ga-item.low .ga-title{color:#1a2744}
+.ga-item.read{opacity:0.6}
+.ga-body{flex:1}
+.ga-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.ga-detail{font-size:12px;color:#6B6B6B;line-height:1.4;margin-bottom:2px}
+.ga-time{font-size:10px;color:#A0897A}
+.ga-readall-btn{padding:10px 20px;border:none;background:#1a2744;color:white;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;margin:12px auto;display:block}
+.gl-item{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+.gl-item:last-child{border-bottom:none}
+.gl-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.gl-body{flex:1}
+.gl-label{font-size:12px;font-weight:600;color:#1a2744;margin-bottom:2px}
+.gl-detail{font-size:12px;color:#6B6B6B;line-height:1.4;margin-bottom:2px}
+.gl-time{font-size:10px;color:#A0897A}
+.ga-filter{display:flex;gap:8px;padding:8px 16px;border-bottom:1px solid rgba(0,0,0,0.04)}
+.ga-filter-btn{padding:5px 14px;border-radius:16px;border:1px solid #E0DDD6;background:white;color:#1a2744;font-size:12px;cursor:pointer;transition:all 0.2s}
+.ga-filter-btn.active{background:#1a2744;color:white;border-color:#1a2744}
+
+
+/* PERMISSION SYSTEM */
+.perm-popup{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;display:none;align-items:center;justify-content:center}
+.perm-popup.active{display:flex}
+.perm-popup-box{background:white;border-radius:20px;padding:28px 24px;width:280px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.2);animation:fadeScale 0.3s ease}
+.perm-popup-icon{font-size:40px;margin-bottom:8px}
+.perm-popup-title{font-size:17px;font-weight:700;color:#1a2744;margin-bottom:8px}
+.perm-popup-text{font-size:13px;color:#6B6B6B;line-height:1.5;margin-bottom:20px}
+.perm-popup-btns{display:flex;gap:10px}
+.perm-popup-deny{flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0DDD6;background:white;color:#1a2744;font-size:14px;font-weight:500;cursor:pointer}
+.perm-popup-allow{flex:1;padding:10px;border-radius:10px;border:none;background:#1a2744;color:white;font-size:14px;font-weight:500;cursor:pointer}
+.perm-popup-deny:active,.perm-popup-allow:active{transform:scale(0.96);opacity:0.9}
+.guard-perm-section{margin-bottom:16px}
+.guard-perm-title{font-size:12px;color:#A0897A;margin-bottom:8px;padding:0 4px}
+.guard-perm-list{display:flex;flex-direction:column;gap:8px}
+.guard-perm-item{display:flex;align-items:center;justify-content:space-between;background:white;border-radius:8px;padding:12px 14px;cursor:pointer;transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.guard-perm-item:active{transform:scale(0.98)}
+.guard-perm-item span:first-child{font-size:13px;color:#1a2744;font-weight:500}
+.guard-perm-status{font-size:11px;padding:3px 10px;border-radius:10px;background:#E0DDD6;color:#1a2744;font-weight:500}
+.guard-perm-status.granted{background:#5B7C6B;color:white}
+.ga-read-btn{margin-top:6px;padding:4px 12px;border-radius:6px;border:none;background:#1a2744;color:white;font-size:11px;cursor:pointer;transition:all 0.2s}
+.ga-read-btn:active{transform:scale(0.95);opacity:0.8}
+.gr-section{padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.06)}
+.gr-section:last-child{border-bottom:none}
+.gr-label{font-size:12px;font-weight:600;color:#A0897A;margin-bottom:6px;letter-spacing:0.5px}
+.gr-value{font-size:13px;color:#1a2744;line-height:1.6}
+.gr-sub{font-size:12px;color:#6B6B6B;margin-top:4px}
+.gr-stats{display:flex;gap:12px;margin-top:8px}
+.gr-stat{flex:1;text-align:center;padding:10px;background:#F5F0E0;border-radius:8px}
+.gr-stat-num{font-size:20px;font-weight:700;color:#1a2744;display:block}
+.gr-stat-label{font-size:11px;color:#A0897A;margin-top:2px}
+.gr-notice{padding:12px;background:#FFF8E1;border-radius:8px;font-size:12px;color:#8B6914;line-height:1.5;margin-top:12px}
+
+
+.card-town .card-overlay{background:linear-gradient(0deg,rgba(26,43,34,0.55) 0%,rgba(26,43,34,0.2) 50%,transparent 100%)}
+.card-chat{position:relative;overflow:hidden;cursor:pointer;transition:all 0.3s;box-shadow:var(--shadow-sm);border:2px solid rgba(212,175,55,0.5);background:linear-gradient(135deg,#5B7C6B 0%,#3A4F44 50%,#1A2E24 100%)}
+.card-chat:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 40px rgba(91,124,107,0.35)}
+.card-chat .card-chat-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 30% 20%,rgba(212,175,55,0.15) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(200,184,154,0.1) 0%,transparent 50%);animation:shimmer 4s linear infinite}
+.card-chat .card-content{position:relative;z-index:2;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px 8px}
+.card-chat .card-icon{width:64px;height:64px;flex-shrink:0;margin-bottom:12px;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.35));animation:float 3s ease-in-out infinite}
+.card-chat .card-title{font-size:20px;font-weight:800;letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,0.4);margin-bottom:6px}
+.card-chat .card-sub{font-size:13px;font-weight:500;opacity:0.95;text-shadow:0 1px 4px rgba(0,0,0,0.3);color:#D4AF37}
+
+
+/* MILA TOWN - Interactive Map with Glowing Markers */
+#page-town .sub-content{background:#2A3B32;padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.town-map-wrap{position:relative;width:100%;max-width:600px;margin:0 auto}
+.town-bg-img{display:block;width:100%;height:auto;border-radius:4px}
+/* Glowing marker */
+
+/* Frosted glass card */
+/* === Town Hotspots === */
+.town-spot{position:absolute;cursor:pointer;z-index:15;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px}
+.town-spot-dot{position:relative;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,#FFF8E0 0%,#F0D060 40%,rgba(200,150,40,0) 70%);box-shadow:0 0 14px rgba(255,220,100,.6),0 0 30px rgba(255,200,80,.3),0 0 50px rgba(255,180,50,.15);transition:all .4s cubic-bezier(.34,1.56,.64,1);animation:spotBreathe 2.5s ease-in-out infinite}
+.town-spot-dot::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:#FFF;box-shadow:0 0 6px rgba(255,255,255,.9)}
+.town-spot:nth-child(2) .town-spot-dot{animation-delay:.3s}
+.town-spot:nth-child(3) .town-spot-dot{animation-delay:.6s}
+.town-spot:nth-child(4) .town-spot-dot{animation-delay:.9s}
+.town-spot:nth-child(5) .town-spot-dot{animation-delay:1.2s}
+.town-spot:nth-child(6) .town-spot-dot{animation-delay:1.5s}
+.town-spot:nth-child(7) .town-spot-dot{animation-delay:1.8s}
+.town-spot:nth-child(8) .town-spot-dot{animation-delay:2.1s}
+.town-spot:nth-child(9) .town-spot-dot{animation-delay:2.4s}
+@keyframes spotBreathe{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.2);opacity:1}}
+.town-spot:hover .town-spot-dot{width:22px;height:22px;box-shadow:0 0 24px rgba(255,230,120,.85),0 0 48px rgba(255,210,100,.5),0 0 80px rgba(255,190,70,.25);animation:none}
+.town-spot:hover{animation:none}
+/* Label tooltip */
+.town-spot-label{position:absolute;top:-32px;left:50%;transform:translateX(-50%) translateY(4px);background:rgba(255,248,235,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:5px 12px;border-radius:10px;font-size:11px;font-weight:700;color:#5B4030;white-space:nowrap;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 10px rgba(0,0,0,.08),0 0 0 1px rgba(180,160,130,.25);letter-spacing:.3px}
+.town-spot-label::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(255,248,235,.92)}
+.town-spot:hover .town-spot-label{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Detail card */
+.town-detail-card{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) translateY(12px);width:min(420px,90vw);max-height:78vh;overflow-y:auto;background:rgba(255,248,235,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:16px;padding:20px 22px 16px;box-shadow:0 8px 32px rgba(0,0,0,.12),0 0 0 1px rgba(180,160,130,.2);z-index:100;opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);border:1px solid rgba(255,255,255,.6)}
+.town-detail-card.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) translateY(0)}
+.town-detail-card .td-close{position:absolute;top:8px;right:10px;font-size:18px;cursor:pointer;color:#A09080;background:none;border:none;padding:2px 6px;border-radius:6px;transition:all .2s;line-height:1}
+.town-detail-card .td-close:hover{color:#5B4030;background:rgba(0,0,0,.05)}
+.town-detail-card .td-name{font-size:18px;font-weight:700;color:#4A3728;margin:0 0 6px;letter-spacing:.5px}
+.town-detail-card .td-desc{font-size:13px;color:#7A5A4A;margin:0 0 10px;line-height:1.55}
+.town-detail-card .td-more{font-size:12px;color:#5A3A2A;line-height:1.7;margin:0;padding-top:10px;border-top:1px solid rgba(180,150,120,.22)}
+.main-bubble-btns{position:absolute;top:46px;right:12px;z-index:20;display:flex;flex-direction:row;gap:6px;align-items:flex-end}
+.bubble-btn{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#5B4030;background:rgba(255,252,245,0.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:5px 10px 5px 12px;border-radius:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.06),0 0 0 1.5px rgba(180,160,130,0.3);transition:all .25s;letter-spacing:.3px;white-space:nowrap}
+.bubble-btn::after{display:none}
+.bubble-btn:first-child{z-index:2}.bubble-btn:last-child{z-index:1;margin-right:-2px}
+.bubble-btn:hover{background:rgba(255,252,245,1);transform:scale(1.03)};box-shadow:0 3px 12px rgba(0,0,0,0.1),0 0 0 1.5px rgba(180,160,130,0.4)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- PAGE 1: LOADING -->
+<div id="page-loading" class="view active">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="loading-wrap">
+    <div class="clover-wrap">
+      <div class="clover-brand">MILA</div>
+      <div class="clover-container">
+        <div class="clover-img"><img src="clover.webp" alt="四叶草"></div>
+      </div>
+      <div class="clover-text">
+        <div class="loading-title">Mila正在赶来</div>
+        <div class="loading-line"></div>
+        <div class="loading-subtitle">今天也想见到你</div>
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PAGE 1.5: LOGIN -->
+<div id="page-login" class="view">
+  <div class="login-overlay">
+    <div class="login-mascot" id="loginMascot"><svg viewBox="0 0 24 24" width="48" height="48" fill="none"><ellipse cx="12" cy="16" rx="7" ry="6" fill="#F0E8E0" stroke="#C0A090" stroke-width="1.2"/><path d="M8 10c-1-4-1-8 0-8s3 3 4 6" fill="#F0E8E0" stroke="#C0A090" stroke-width="1"/><path d="M16 10c1-4 1-8 0-8s-3 3-4 6" fill="#F0E8E0" stroke="#C0A090" stroke-width="1"/><circle cx="10" cy="15" r="1" fill="#5B4030"/><circle cx="14" cy="15" r="1" fill="#5B4030"/></svg></div>
+    <div class="login-greeting">
+      <h1>欢迎来到 Mila</h1>
+      <p id="loginQuote">真诚的朋友是人生最珍贵的礼物</p>
+    </div>
+    <div class="login-child-section">
+      <div class="login-input-wrap">
+        <label for="loginName">如何称呼你：</label>
+        <input type="text" id="loginName" placeholder="输入你的名字" maxlength="8" oninput="checkLoginInput()" onkeypress="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="login-enter-btn" id="loginEnterBtn" onclick="doLogin()" disabled>进入</button>
+    </div>
+    <div class="login-bottom-links">
+      <a class="login-bottom-link" onclick="showPage('page-guardian')"><span class="dot g"></span>监护人端</a>
+      <a class="login-bottom-link" onclick="showPage('page-professional')"><span class="dot p"></span>专业人士/机构端</a>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: CHILD ENTRY -->
+<div id="page-child" class="view">
+  <div class="entry-overlay">
+    <div class="entry-mascot" id="entryMascot"><svg viewBox="0 0 24 24" width="48" height="48" fill="none"><ellipse cx="12" cy="16" rx="7" ry="6" fill="#F0E8E0" stroke="#C0A090" stroke-width="1.2"/><path d="M8 10c-1-4-1-8 0-8s3 3 4 6" fill="#F0E8E0" stroke="#C0A090" stroke-width="1"/><path d="M16 10c1-4 1-8 0-8s-3 3-4 6" fill="#F0E8E0" stroke="#C0A090" stroke-width="1"/><circle cx="10" cy="15" r="1" fill="#5B4030"/><circle cx="14" cy="15" r="1" fill="#5B4030"/></svg></div>
+    <div class="entry-greeting">
+      <h1 id="entryName">Hi! 小明</h1>
+      <p>欢迎来到你的心灵花园</p>
+    </div>
+    <button class="enter-btn" onclick="showPage('page-news')">进入</button>
+  </div>
+  <div class="entry-quote" id="entryQuote">真诚的朋友是人生最珍贵的礼物</div>
+</div>
+
+<!-- PAGE 3: NEWS -->
+<div id="page-news" class="view">
+  <div class="news-header">
+    <div class="news-header-left">
+      <h1><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="#6B5040" stroke-width="1.2"><path d="M3 8h3l5-5v14l-5-5H3V8z" fill="#F0E0C8"/><path d="M12 6c1 1.2 1.2 2.5 1.2 4s-.2 2.8-1.2 4" stroke="#6B5040"/></svg> 世界快讯</h1>
+      <p>了解世界上的重要日子与伟大人物</p>
+    </div>
+    <button class="news-enter-btn" onclick="showPage('page-main')">进入主界面</button>
+  </div>
+  <div class="news-list">
+    <div class="news-card">
+      <span class="news-tag"><svg viewBox="0 0 14 14" width="12" height="12" fill="none"><circle cx="7" cy="7" r="6" fill="#D0E0F0" stroke="#5B80B0" stroke-width="0.8"/><ellipse cx="7" cy="7" rx="3" ry="6" stroke="#5B80B0" stroke-width="0.6" fill="none"/></svg> 国际节日</span>
+      <h3>7月11日 世界人口日</h3>
+      <p>1987年的这一天，世界人口突破了50亿。联合国设立这个日子，是为了让我们关注地球上每一个人都值得被尊重，世界因多样性而美丽。</p>
+      <div class="news-time"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#6B5040" stroke-width="0.8"><rect x="1" y="2" width="12" height="11" rx="1.5" fill="#F8F4EC"/><line x1="1" y1="5" x2="13" y2="5"/><path d="M4 1v2M10 1v2"/></svg> 即将到来 7月11日</div>
+    </div>
+    <div class="news-card">
+      <span class="news-tag"><svg viewBox="0 0 14 14" width="12" height="12" fill="none"><circle cx="7" cy="5" r="3" fill="#F0E0C0" stroke="#C0A040" stroke-width="0.8"/><path d="M5 7l-1 5h8l-1-5" fill="#E0D0A0" stroke="#C0A040" stroke-width="0.8"/></svg> 中国节日</span>
+      <h3>8月1日 中国人民解放军建军节</h3>
+      <p>1927年的这一天，中国人民解放军诞生了。军人们守护着我们的家园，是最可爱的人。向他们致敬！</p>
+      <div class="news-time"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#6B5040" stroke-width="0.8"><rect x="1" y="2" width="12" height="11" rx="1.5" fill="#F8F4EC"/><line x1="1" y1="5" x2="13" y2="5"/><path d="M4 1v2M10 1v2"/></svg> 即将到来 8月1日</div>
+    </div>
+    <div class="news-card">
+      <span class="news-tag"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#5B4030" stroke-width="0.8"><path d="M2 2h4c.6 0 .6.5.6.5v8c0-.5-.6-.5-.6-.5H2V2z" fill="#F0E8D8"/><path d="M12 2H8c-.6 0-.6.5-.6.5v8c0-.5.6-.5.6-.5h4V2z" fill="#E8DCC8"/></svg> 国际纪念日</span>
+      <h3>9月8日 国际扫盲日</h3>
+      <p>联合国教科文组织在1965年设立这一天，提醒我们知识改变命运。读书识字是每个人走向美好未来的钥匙。</p>
+      <div class="news-time"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#6B5040" stroke-width="0.8"><rect x="1" y="2" width="12" height="11" rx="1.5" fill="#F8F4EC"/><line x1="1" y1="5" x2="13" y2="5"/><path d="M4 1v2M10 1v2"/></svg> 即将到来 9月8日</div>
+    </div>
+    <div class="news-card">
+      <span class="news-tag"><svg viewBox="0 0 14 14" width="12" height="12" fill="none"><path d="M7 2c-2.5 0-5 3.5-5 5.5 0 1.2 1 2.5 2.5 2.5h.5c.8-1.2 2.5-2.5 2.5-2.5s1.7 1.3 2.5 2.5h.5c1.5 0 2-1.3 2-2.5C12 5.5 9.5 2 7 2z" fill="#F0F0E8" stroke="#8B8070" stroke-width="0.8"/></svg> 世界和平</span>
+      <h3>9月21日 国际和平日</h3>
+      <p>联合国在1981年设立这一天，呼吁全世界放下争端。愿世界和平，每个小朋友都能在蓝天下快乐成长。</p>
+      <div class="news-time"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#6B5040" stroke-width="0.8"><rect x="1" y="2" width="12" height="11" rx="1.5" fill="#F8F4EC"/><line x1="1" y1="5" x2="13" y2="5"/><path d="M4 1v2M10 1v2"/></svg> 即将到来 9月21日</div>
+    </div>
+    <div class="news-card">
+      <span class="news-tag"><svg viewBox="0 0 14 14" width="12" height="12" fill="none"><ellipse cx="7" cy="9" rx="3" ry="3.5" fill="#D0C0A0" stroke="#8B7050" stroke-width="0.8"/><circle cx="5" cy="5.5" r="1.2" fill="#D0C0A0" stroke="#8B7050" stroke-width="0.7"/><circle cx="9" cy="5.5" r="1.2" fill="#D0C0A0" stroke="#8B7050" stroke-width="0.7"/></svg> 关爱动物</span>
+      <h3>10月4日 世界动物日</h3>
+      <p>这一天提醒我们关爱身边的小动物。无论是家里的宠物，还是大自然中的野生动物，它们都是我们的朋友。</p>
+      <div class="news-time"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#6B5040" stroke-width="0.8"><rect x="1" y="2" width="12" height="11" rx="1.5" fill="#F8F4EC"/><line x1="1" y1="5" x2="13" y2="5"/><path d="M4 1v2M10 1v2"/></svg> 即将到来 10月4日</div>
+    </div>
+    <div class="news-card">
+      <span class="news-tag"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#A09060" stroke-width="0.8"><path d="M7 13V5" stroke="#A09060"/><path d="M7 5c-1.2-2-3.5-2-4.5-.8 1.2.6 3 1.8 4.5.8z" fill="#D4B060"/><path d="M7 8c1.2-2 3.5-2 4.5-.8-1.2.6-3 1.8-4.5.8z" fill="#D4B060"/></svg> 致敬伟人</span>
+      <h3>10月16日 世界粮食日</h3>
+      <p>纪念"杂交水稻之父"袁隆平爷爷，他一生致力于让全世界的人都能吃饱饭。珍惜粮食，就是对英雄最好的纪念。</p>
+      <div class="news-time"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="#6B5040" stroke-width="0.8"><rect x="1" y="2" width="12" height="11" rx="1.5" fill="#F8F4EC"/><line x1="1" y1="5" x2="13" y2="5"/><path d="M4 1v2M10 1v2"/></svg> 即将到来 10月16日</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: MAIN HOME -->
+<div id="page-main" class="view">
+  <div class="main-bubble-btns">
+    <div class="bubble-btn" onclick="showPage('page-news')">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="#5B4030" stroke-width="1.2" stroke-linecap="round"><path d="M2 8h3l5-5v12l-5-5H2V8z"/><path d="M11 5c1 1.5 1.5 3 1.5 4.5s-.5 3-1.5 4.5" opacity="0.5"/></svg>
+      返回快讯
+    </div>
+    <div class="bubble-btn" onclick="showPage('page-child')">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="#5B4030" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8l6-6 6 6"/><path d="M4 7h8v7H4z"/></svg>
+      返回主页面
+    </div>
+  </div>
+  <div class="main-top">
+    <div class="brand"><span>🍀</span> Mila 启智润心</div>
+  </div>
+  <div class="main-grid">
+    <div class="grid-card card-mood" onclick="showPage('page-mood')">
+      <img class="card-bg-img" src="ghibli_bg_mood.jpg" alt="彩虹花园">
+      <div class="card-overlay"></div>
+      <div class="card-content"><div class="card-icon"><img src="icon_rainbow_garden.png" alt="彩虹花园" style="width:100%;height:100%;object-fit:contain"></div><div class="card-title">彩虹花园</div><div class="card-sub">分享心情</div></div>
+    </div>
+    <div class="grid-card card-art" onclick="showPage('page-art')">
+      <img class="card-bg-img" src="ghibli_bg_art.jpg" alt="艺术派">
+      <div class="card-overlay"></div>
+      <div class="card-content"><div class="card-icon"><img src="icon_art_inspiration.png" alt="艺术派" style="width:100%;height:100%;object-fit:contain"></div><div class="card-title">艺术派</div><div class="card-sub">发现美</div></div>
+    </div>
+    <div class="grid-card card-studio" onclick="showPage('page-studio')">
+      <img class="card-bg-img" src="ghibli_bg_studio.jpg" alt="创意工坊">
+      <div class="card-overlay"></div>
+      <div class="card-content"><div class="card-icon"><img src="icon_creative_workshop.png" alt="创意工坊" style="width:100%;height:100%;object-fit:contain"></div><div class="card-title">创意工坊</div><div class="card-sub">手账工具</div></div>
+    </div>
+    <div class="grid-card card-blog" onclick="showPage('page-blog')">
+      <img class="card-bg-img" src="ghibli_bg_blog.jpg" alt="部落格">
+      <div class="card-overlay"></div>
+      <div class="card-content"><div class="card-icon"><img src="icon_blog_diary.png" alt="部落格" style="width:100%;height:100%;object-fit:contain"></div><div class="card-title">部落格</div><div class="card-sub">记录成长</div></div>
+    </div>
+    <div class="grid-card card-town" onclick="showPage('page-town')">
+      <img class="card-bg-img" src="ghibli_bg_town.jpg" alt="Mila小镇">
+      <div class="card-overlay"></div>
+      <div class="card-content"><div class="card-icon"><img src="icon_town.png" alt="Mila小镇" style="width:100%;height:100%;object-fit:contain"></div><div class="card-title">Mila小镇</div><div class="card-sub">探索世界</div></div>
+    </div>
+    <div class="grid-card card-chat" onclick="showPage('page-chat')">
+      <div class="card-chat-bg"></div>
+      <div class="card-content"><div class="card-icon"><img src="icon_mila_chat_final.png" alt="Mila聊天" style="width:100%;height:100%;object-fit:contain"></div><div class="card-title">Mila在这里</div><div class="card-sub">和我聊聊吧 ✨</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 5: MOOD -->
+<div id="page-mood" class="view">
+  <div class="sub-header">
+    <button class="back-btn" onclick="showPage('page-main')">◀</button>
+    <h1><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1C4.5 1 1 4.5 1 9s3.5 8 8 8 8-3.5 8-8" stroke="#E8A040" stroke-width="1.5"/><path d="M9 1c-1.5 3-.8 6 0 7.5.8-1.5 1.5-4.5 0-7.5z" fill="#E86060" opacity="0.7"/><path d="M9 1c1.5 3 4 4.5 6 4.5-1.5 2.3-4 3.8-6 4.5" fill="#E8A040" opacity="0.7"/><path d="M9 1c-0.8 3-3 5.3-5.3 6 2.3 0 4.5-1.5 5.3-6z" fill="#60B060" opacity="0.7"/></svg> 彩虹花园</h1>
+  </div>
+  <div class="sub-content">
+    <div class="mood-welcome"><h2>今天心情怎么样？</h2><p>选一个最能代表你现在心情的表情吧</p></div>
+    <div class="mood-emoji-grid" id="moodGrid">
+      <div class="mood-emoji-item" data-mood="开心" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#FFE8A0" stroke="#D4A030" stroke-width="1.5"/><circle cx="14" cy="17" r="2" fill="#6B5030"/><circle cx="26" cy="17" r="2" fill="#6B5030"/><path d="M14 26c2.5 2.5 9.5 2.5 12 0" stroke="#6B5030" stroke-width="1.5" fill="none"/></svg></span><span class="me-label">开心</span></div>
+      <div class="mood-emoji-item" data-mood="兴奋" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#FFE8A0" stroke="#D4A030" stroke-width="1.5"/><path d="M13 18l2-2 2 2" stroke="#6B5030" stroke-width="1.5"/><path d="M23 18l2-2 2 2" stroke="#6B5030" stroke-width="1.5"/><circle cx="14" cy="20" r="1.5" fill="#6B5030"/><circle cx="26" cy="20" r="1.5" fill="#6B5030"/><ellipse cx="20" cy="29" rx="4" ry="3" fill="#E08060" stroke="#C06040" stroke-width="1"/></svg></span><span class="me-label">兴奋</span></div>
+      <div class="mood-emoji-item" data-mood="平静" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#D0E8D0" stroke="#80B080" stroke-width="1.5"/><path d="M14 18c2-0.8 4-0.8 6 0" stroke="#5B805B" stroke-width="1.5"/><path d="M20 18c2-0.8 4-0.8 6 0" stroke="#5B805B" stroke-width="1.5"/><path d="M16 28c2 1.5 6 1.5 8 0" stroke="#5B805B" stroke-width="1.5" fill="none"/></svg></span><span class="me-label">平静</span></div>
+      <div class="mood-emoji-item" data-mood="困倦" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#D8E0F0" stroke="#8090B0" stroke-width="1.5"/><path d="M13 19l3 1.5 3-1.5" stroke="#5B6080" stroke-width="1.5"/><path d="M21 19l3 1.5 3-1.5" stroke="#5B6080" stroke-width="1.5"/><path d="M17 26h6" stroke="#5B6080" stroke-width="1.5"/><text x="30" y="16" font-size="9" fill="#8090B0" font-family="Georgia,serif" stroke="none">z</text><text x="34" y="12" font-size="7" fill="#8090B0" font-family="Georgia,serif" stroke="none">z</text></svg></span><span class="me-label">困倦</span></div>
+      <div class="mood-emoji-item" data-mood="难过" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#E0E8F0" stroke="#7090B0" stroke-width="1.5"/><circle cx="14" cy="17" r="2" fill="#5B7090"/><circle cx="26" cy="17" r="2" fill="#5B7090"/><path d="M13 28c2.5-2.5 5-4 7-4s4.5 1.5 7 4" stroke="#5090C0" stroke-width="1.5" fill="none"/><ellipse cx="13" cy="28" rx="2" ry="3" fill="#80C0E0" opacity="0.5"/></svg></span><span class="me-label">难过</span></div>
+      <div class="mood-emoji-item" data-mood="生气" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#F0D8D0" stroke="#C08060" stroke-width="1.5"/><circle cx="14" cy="19" r="2" fill="#6B4030"/><circle cx="26" cy="19" r="2" fill="#6B4030"/><path d="M12 10c0 4 2.5 6.5 6 6.5" stroke="#6B4030" stroke-width="1.5"/><path d="M28 10c0 4-2.5 6.5-6 6.5" stroke="#6B4030" stroke-width="1.5"/><path d="M15 28c2-2 8-2 10 0" stroke="#6B4030" stroke-width="1.5" fill="none"/></svg></span><span class="me-label">生气</span></div>
+      <div class="mood-emoji-item" data-mood="担心" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#F0E8D8" stroke="#C0A070" stroke-width="1.5"/><circle cx="14" cy="16" r="2.5" fill="#8B7050"/><circle cx="26" cy="16" r="2.5" fill="#8B7050"/><path d="M15 32c2-3 3.5-7 5-7s3 4 5 7" stroke="#8B7050" stroke-width="1.2" fill="none"/><ellipse cx="20" cy="28" rx="3" ry="2" fill="#E8D0B0" stroke="#C0A070" stroke-width="1"/></svg></span><span class="me-label">担心</span></div>
+      <div class="mood-emoji-item" data-mood="惊讶" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#F0F0E8" stroke="#A0A080" stroke-width="1.5"/><circle cx="14" cy="18" r="3.5" fill="#6B6040"/><circle cx="26" cy="18" r="3.5" fill="#6B6040"/><ellipse cx="20" cy="30" rx="4" ry="3.5" fill="#F0D8C0" stroke="#A08060" stroke-width="1.2"/></svg></span><span class="me-label">惊讶</span></div>
+      <div class="mood-emoji-item" data-mood="害羞" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#F0E0E8" stroke="#C090A0" stroke-width="1.5"/><circle cx="14" cy="17" r="2" fill="#6B5060"/><circle cx="26" cy="17" r="2" fill="#6B5060"/><path d="M15 26c2.5-1.5 3 0 5 0s2.5-1.5 5 0" stroke="#6B5060" stroke-width="1.2" fill="none"/><circle cx="20" cy="25" r="4" fill="#E0A0A0" opacity="0.4"/></svg></span><span class="me-label">害羞</span></div>
+      <div class="mood-emoji-item" data-mood="爱你" onclick="selectMood(this)"><span class="me-emoji"><svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="17" fill="#F8E8F0" stroke="#D080A0" stroke-width="1.5"/><circle cx="14" cy="17" r="2" fill="#6B4060"/><circle cx="26" cy="17" r="2" fill="#6B4060"/><path d="M14 27c3 2.5 9 2.5 12 0" stroke="#6B4060" stroke-width="1.5" fill="none"/><path d="M11 9c1.5-1.5 3 0 3 1.5s-1.5 3 0 3" stroke="#E080A0" stroke-width="1.2"/><path d="M29 9c-1.5-1.5-3 0-3 1.5s1.5 3 0 3" stroke="#E080A0" stroke-width="1.2"/></svg></span><span class="me-label">爱你</span></div>
+    </div>
+    <div class="mood-note-area">
+      <label><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="#6B5040" stroke-width="1.2"><path d="M11 2l3 3-8 8H3v-3L11 2z" fill="#F0E8D8"/></svg> 写下你的心情留言</label>
+      <textarea id="moodNote" placeholder="今天发生了什么？把你的心情写下来吧..."></textarea>
+    </div>
+    <button class="mood-save-btn" onclick="saveMood()"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="#5B7060" stroke-width="1.2"><rect x="2" y="1" width="12" height="14" rx="1.5" fill="#E0E8E0"/><rect x="5" y="1" width="6" height="4" fill="#C0D0C0"/></svg> 保存心情</button>
+    <div class="mood-history-title"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="#6B5040" stroke-width="1.2"><rect x="2" y="1" width="12" height="14" rx="1" fill="#F0E8D8"/><path d="M5 4h6M5 7h6M5 10h4" stroke="#6B5040" stroke-width="0.8"/></svg> 心情日记</div>
+    <div id="moodHistory"></div>
+  </div>
+  <div class="sub-nav">
+    <div class="sub-nav-item" onclick="showPage('page-main')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3L3 12h3v9h6v-6h3v6h6v-9h3L12 3z" fill="#F0E8D8" stroke="#5B4030" stroke-width="1.5"/>
+  <path d="M10 8c1-0.5 2-0.5 3 0" stroke="#C08060" stroke-width="0.8"/>
+  <path d="M12 14l-1.5 1.5L12 17l1.5-1.5L12 14z" fill="#E8A0A0" stroke="#C06060" stroke-width="0.6"/>
+</svg></span><span class="sn-label">首页</span></div>
+    <div class="sub-nav-item active"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="5" r="3" fill="#F8D070" stroke="#D4A030" stroke-width="1"/>
+  <path d="M9 8a6 6 0 016 0" stroke="#E8A040" stroke-width="1.5" fill="none"/>
+  <path d="M7 10a8 8 0 0110 0" stroke="#E86060" stroke-width="1.2" fill="none" opacity="0.8"/>
+  <path d="M5 12a10 10 0 0114 0" stroke="#60B060" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M10 18c-1-1.5-2.5-1.5-3.5 0s-1.5 2.5-0.5 4c1 1 2.5 1 3.5-0.5" fill="#E8C0D0" stroke="#C090A0" stroke-width="0.8"/>
+  <path d="M14 16c1-1 2.5-0.5 3 1s0 2.5-1.5 3c-1.5 0.5-2.5-0.5-2-2" fill="#C0D8E8" stroke="#8090B0" stroke-width="0.8"/>
+  <path d="M18 14l1.5-2 1.5 2-1.5 2z" fill="#F0E0A0" stroke="#C0A040" stroke-width="0.8"/>
+</svg></span><span class="sn-label">心情</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-art')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#8B6040" stroke-width="1.2"><circle cx="10" cy="14" r="5" fill="#F0E0C8" stroke="#8B6040"/><circle cx="8" cy="13" r="1.2" fill="#E07050"/><circle cx="12" cy="13" r="1.2" fill="#5090C0"/></svg></span><span class="sn-label">艺术</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-studio')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.3" stroke-linecap="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v3M10 15v3M3 10h3M14 10h3"/></svg></span><span class="sn-label">工具</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-blog')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#5B4030" stroke-width="1.2"><path d="M3 3h5c.7 0 .7.7.7.7v10c0-.7-.7-.7-.7-.7H3V3z" fill="#F0E8D8"/><path d="M17 3h-5c-.7 0-.7.7-.7.7v10c0-.7.7-.7.7-.7h5V3z" fill="#E8DCC8"/></svg></span><span class="sn-label">部落</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-town')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.2"><path d="M3 16h14"/><path d="M4.5 16V8l5.5-6 5.5 6v8" stroke="#6B5040"/><rect x="8" y="11" width="4" height="5" fill="#F0E0C8" stroke="#6B5040"/></svg></span><span class="sn-label">小镇</span></div>
+  </div>
+</div>
+
+<!-- PAGE 6: ART -->
+<div id="page-art" class="view">
+  <div class="sub-header">
+    <button class="back-btn" onclick="showPage('page-main')">◀</button>
+    <h1><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M6 20h12" stroke="#8B6040" stroke-width="1.5"/>
+  <path d="M9 20V8h6v12" stroke="#8B6040" stroke-width="1.2"/>
+  <path d="M7 8h10l-1-3H8l-1 3z" fill="#F0E0C8" stroke="#8B6040" stroke-width="1"/>
+  <circle cx="12" cy="5" r="1.5" fill="#E07050" stroke="#8B6040" stroke-width="0.8"/>
+  <path d="M14 12c1 0 2 1 2 2s-1 2-2 2" fill="#C0D8E8" stroke="#7090B0" stroke-width="0.8"/>
+  <path d="M4 6c0 2 2 3 3 2l-1 4" stroke="#8B6040" stroke-width="1.2"/>
+  <ellipse cx="3.5" cy="4" rx="1" ry="2" fill="#F0E0C8" stroke="#8B6040" stroke-width="0.8" transform="rotate(-30 3.5 4)"/>
+</svg> 艺术派</h1>
+    <div class="art-header-actions"><button class="art-gen-btn" onclick="generateArt()">✨ 换一批</button></div>
+  </div>
+  <div class="sub-content">
+    <div class="art-gallery" id="artGallery"></div>
+    <div class="art-fav-section">
+      <div class="art-fav-title"><svg viewBox="0 0 18 18" width="16" height="16" fill="none"><path d="M15 4.5a3.8 3.8 0 00-5.5 0L9 5l-.5-.5a3.8 3.8 0 00-5.5 0 3.8 3.8 0 000 5.5l.5.5L9 15l5.5-5.5.5-.5a3.8 3.8 0 000-5.5z" fill="#E08080" stroke="#B05050" stroke-width="1"/></svg> 我的收藏</div>
+      <div id="artFavorites"><div class="art-empty"><div class="empty-icon"><svg viewBox="0 0 40 40" width="40" height="40" fill="none"><circle cx="20" cy="26" r="11" fill="#F0E0C8" stroke="#8B6040" stroke-width="1.2"/><circle cx="16" cy="24" r="2" fill="#E07050"/><circle cx="24" cy="24" r="2" fill="#5090C0"/></svg></div>还没有收藏任何作品<br>点击图片上的爱心来收藏吧</div></div>
+    </div>
+  </div>
+  <div class="sub-nav">
+    <div class="sub-nav-item" onclick="showPage('page-main')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3L3 12h3v9h6v-6h3v6h6v-9h3L12 3z" fill="#F0E8D8" stroke="#5B4030" stroke-width="1.5"/>
+  <path d="M10 8c1-0.5 2-0.5 3 0" stroke="#C08060" stroke-width="0.8"/>
+  <path d="M12 14l-1.5 1.5L12 17l1.5-1.5L12 14z" fill="#E8A0A0" stroke="#C06060" stroke-width="0.6"/>
+</svg></span><span class="sn-label">首页</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-mood')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="5" r="3" fill="#F8D070" stroke="#D4A030" stroke-width="1"/>
+  <path d="M9 8a6 6 0 016 0" stroke="#E8A040" stroke-width="1.5" fill="none"/>
+  <path d="M7 10a8 8 0 0110 0" stroke="#E86060" stroke-width="1.2" fill="none" opacity="0.8"/>
+  <path d="M5 12a10 10 0 0114 0" stroke="#60B060" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M10 18c-1-1.5-2.5-1.5-3.5 0s-1.5 2.5-0.5 4c1 1 2.5 1 3.5-0.5" fill="#E8C0D0" stroke="#C090A0" stroke-width="0.8"/>
+  <path d="M14 16c1-1 2.5-0.5 3 1s0 2.5-1.5 3c-1.5 0.5-2.5-0.5-2-2" fill="#C0D8E8" stroke="#8090B0" stroke-width="0.8"/>
+  <path d="M18 14l1.5-2 1.5 2-1.5 2z" fill="#F0E0A0" stroke="#C0A040" stroke-width="0.8"/>
+</svg></span><span class="sn-label">心情</span></div>
+    <div class="sub-nav-item active"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#8B6040" stroke-width="1.2"><circle cx="10" cy="14" r="5" fill="#F0E0C8" stroke="#8B6040"/><circle cx="8" cy="13" r="1.2" fill="#E07050"/><circle cx="12" cy="13" r="1.2" fill="#5090C0"/></svg></span><span class="sn-label">艺术</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-studio')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.3" stroke-linecap="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v3M10 15v3M3 10h3M14 10h3"/></svg></span><span class="sn-label">工具</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-blog')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#5B4030" stroke-width="1.2"><path d="M3 3h5c.7 0 .7.7.7.7v10c0-.7-.7-.7-.7-.7H3V3z" fill="#F0E8D8"/><path d="M17 3h-5c-.7 0-.7.7-.7.7v10c0-.7.7-.7.7-.7h5V3z" fill="#E8DCC8"/></svg></span><span class="sn-label">部落</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-town')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.2"><path d="M3 16h14"/><path d="M4.5 16V8l5.5-6 5.5 6v8" stroke="#6B5040"/><rect x="8" y="11" width="4" height="5" fill="#F0E0C8" stroke="#6B5040"/></svg></span><span class="sn-label">小镇</span></div>
+  </div>
+</div>
+
+<!-- PAGE 7: STUDIO -->
+<div id="page-studio" class="view">
+  <div class="sub-header">
+    <button class="back-btn" onclick="showPage('page-main')">◀</button>
+    <h1><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.3" stroke-linecap="round"><circle cx="9" cy="9" r="2.5"/><path d="M9 1v3M9 14v3M2.5 2.5l2.1 2.1M13.4 13.4l2.1 2.1M1 9h3M14 9h3M2.5 15.5l2.1-2.1M13.4 4.6l2.1-2.1"/></svg> 手账与工具间</h1>
+  </div>
+  <div class="sub-content">
+    <div class="studio-tools">
+      <div class="studio-card" onclick="toast('便签功能开发中')"><div class="st-bg st-bg-1"></div><div class="st-icon">📝</div><div class="st-name">便签</div><div class="st-desc">快速记录灵感<br>和待办事项</div></div>
+      <div class="studio-card" onclick="toast('日历功能开发中')"><div class="st-bg st-bg-2"></div><div class="st-icon">📅</div><div class="st-name">日历</div><div class="st-desc">规划每一天<br>记录重要日子</div></div>
+      <div class="studio-card" onclick="toast('番茄钟功能开发中')"><div class="st-bg st-bg-3"></div><div class="st-icon">⏱️</div><div class="st-name">番茄钟</div><div class="st-desc">专注学习<br>提高效率</div></div>
+      <div class="studio-card" onclick="toast('记账本功能开发中')"><div class="st-bg st-bg-4"></div><div class="st-icon">💰</div><div class="st-name">记账本</div><div class="st-desc">记录零花钱<br>学会理财</div></div>
+      <div class="studio-card" onclick="toast('习惯打卡功能开发中')"><div class="st-bg st-bg-5"></div><div class="st-icon">✅</div><div class="st-name">习惯打卡</div><div class="st-desc">养成好习惯<br>每日坚持</div></div>
+      <div class="studio-card" onclick="toast('白噪音功能开发中')"><div class="st-bg st-bg-6"></div><div class="st-icon">🎵</div><div class="st-name">白噪音</div><div class="st-desc">雨声、海浪<br>助眠放松</div></div>
+    </div>
+  </div>
+  <div class="sub-nav">
+    <div class="sub-nav-item" onclick="showPage('page-main')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3L3 12h3v9h6v-6h3v6h6v-9h3L12 3z" fill="#F0E8D8" stroke="#5B4030" stroke-width="1.5"/>
+  <path d="M10 8c1-0.5 2-0.5 3 0" stroke="#C08060" stroke-width="0.8"/>
+  <path d="M12 14l-1.5 1.5L12 17l1.5-1.5L12 14z" fill="#E8A0A0" stroke="#C06060" stroke-width="0.6"/>
+</svg></span><span class="sn-label">首页</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-mood')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="5" r="3" fill="#F8D070" stroke="#D4A030" stroke-width="1"/>
+  <path d="M9 8a6 6 0 016 0" stroke="#E8A040" stroke-width="1.5" fill="none"/>
+  <path d="M7 10a8 8 0 0110 0" stroke="#E86060" stroke-width="1.2" fill="none" opacity="0.8"/>
+  <path d="M5 12a10 10 0 0114 0" stroke="#60B060" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M10 18c-1-1.5-2.5-1.5-3.5 0s-1.5 2.5-0.5 4c1 1 2.5 1 3.5-0.5" fill="#E8C0D0" stroke="#C090A0" stroke-width="0.8"/>
+  <path d="M14 16c1-1 2.5-0.5 3 1s0 2.5-1.5 3c-1.5 0.5-2.5-0.5-2-2" fill="#C0D8E8" stroke="#8090B0" stroke-width="0.8"/>
+  <path d="M18 14l1.5-2 1.5 2-1.5 2z" fill="#F0E0A0" stroke="#C0A040" stroke-width="0.8"/>
+</svg></span><span class="sn-label">心情</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-art')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#8B6040" stroke-width="1.2"><circle cx="10" cy="14" r="5" fill="#F0E0C8" stroke="#8B6040"/><circle cx="8" cy="13" r="1.2" fill="#E07050"/><circle cx="12" cy="13" r="1.2" fill="#5090C0"/></svg></span><span class="sn-label">艺术</span></div>
+    <div class="sub-nav-item active"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.3" stroke-linecap="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v3M10 15v3M3 10h3M14 10h3"/></svg></span><span class="sn-label">工具</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-blog')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#5B4030" stroke-width="1.2"><path d="M3 3h5c.7 0 .7.7.7.7v10c0-.7-.7-.7-.7-.7H3V3z" fill="#F0E8D8"/><path d="M17 3h-5c-.7 0-.7.7-.7.7v10c0-.7.7-.7.7-.7h5V3z" fill="#E8DCC8"/></svg></span><span class="sn-label">部落</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-town')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.2"><path d="M3 16h14"/><path d="M4.5 16V8l5.5-6 5.5 6v8" stroke="#6B5040"/><rect x="8" y="11" width="4" height="5" fill="#F0E0C8" stroke="#6B5040"/></svg></span><span class="sn-label">小镇</span></div>
+  </div>
+</div>
+
+<!-- PAGE 8: BLOG -->
+<div id="page-blog" class="view">
+  <div class="sub-header">
+    <button class="back-btn" onclick="showPage('page-main')">◀</button>
+    <h1><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="#5B4030" stroke-width="1.2"><path d="M3 2h5c.8 0 .8.8.8.8v11c0-.8-.8-.8-.8-.8H3V2z" fill="#F0E8D8"/><path d="M15 2h-5c-.8 0-.8.8-.8.8v11c0-.8.8-.8.8-.8h5V2z" fill="#E8DCC8"/></svg> 部落格</h1>
+    <button class="sub-action" onclick="openEditor()">✏️</button>
+  </div>
+  <div class="sub-content" id="blogContent">
+    <button class="blog-new-btn" onclick="openEditor()">➕ 写一篇新文章</button>
+    <div class="blog-list" id="blogList"></div>
+  </div>
+  <div class="blog-editor" id="blogEditor">
+    <div class="sub-header"><button class="back-btn" onclick="closeEditor()">◀</button><h1><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="4" y="2" width="14" height="20" rx="1.5" fill="#F8F0E0" stroke="#5B4030" stroke-width="1.2"/>
+  <path d="M7 2v20" stroke="#C0A080" stroke-width="0.8"/>
+  <line x1="9" y1="5" x2="15" y2="5" stroke="#C0A080" stroke-width="0.8"/>
+  <line x1="9" y1="8" x2="14" y2="8" stroke="#C0A080" stroke-width="0.6"/>
+  <line x1="9" y1="11" x2="13" y2="11" stroke="#C0A080" stroke-width="0.6"/>
+  <path d="M18 4c2 0 3 2 2 4s-3 3-4 2" fill="#F0E0C0" stroke="#8B7050" stroke-width="0.8"/>
+  <path d="M16 10c1.5-1 3-0.5 3.5 1s-0.5 3-2 3.5" fill="#D0E0C0" stroke="#709060" stroke-width="0.8"/>
+</svg> 写文章</h1></div>
+    <input class="blog-editor-input" id="blogTitle" placeholder="给你的文章起个标题...">
+    <textarea class="blog-editor-textarea" id="blogBody" placeholder="在这里写下你的想法...&#10;&#10;可以写写今天发生了什么有趣的事情，&#10;或者你有什么新的感悟..."></textarea>
+    <div class="blog-editor-bar">
+      <button class="blog-cancel" onclick="closeEditor()">取消</button>
+      <button class="blog-save" onclick="saveBlog()">发布文章</button>
+    </div>
+  </div>
+  <div class="sub-nav">
+    <div class="sub-nav-item" onclick="showPage('page-main')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3L3 12h3v9h6v-6h3v6h6v-9h3L12 3z" fill="#F0E8D8" stroke="#5B4030" stroke-width="1.5"/>
+  <path d="M10 8c1-0.5 2-0.5 3 0" stroke="#C08060" stroke-width="0.8"/>
+  <path d="M12 14l-1.5 1.5L12 17l1.5-1.5L12 14z" fill="#E8A0A0" stroke="#C06060" stroke-width="0.6"/>
+</svg></span><span class="sn-label">首页</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-mood')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="5" r="3" fill="#F8D070" stroke="#D4A030" stroke-width="1"/>
+  <path d="M9 8a6 6 0 016 0" stroke="#E8A040" stroke-width="1.5" fill="none"/>
+  <path d="M7 10a8 8 0 0110 0" stroke="#E86060" stroke-width="1.2" fill="none" opacity="0.8"/>
+  <path d="M5 12a10 10 0 0114 0" stroke="#60B060" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M10 18c-1-1.5-2.5-1.5-3.5 0s-1.5 2.5-0.5 4c1 1 2.5 1 3.5-0.5" fill="#E8C0D0" stroke="#C090A0" stroke-width="0.8"/>
+  <path d="M14 16c1-1 2.5-0.5 3 1s0 2.5-1.5 3c-1.5 0.5-2.5-0.5-2-2" fill="#C0D8E8" stroke="#8090B0" stroke-width="0.8"/>
+  <path d="M18 14l1.5-2 1.5 2-1.5 2z" fill="#F0E0A0" stroke="#C0A040" stroke-width="0.8"/>
+</svg></span><span class="sn-label">心情</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-art')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#8B6040" stroke-width="1.2"><circle cx="10" cy="14" r="5" fill="#F0E0C8" stroke="#8B6040"/><circle cx="8" cy="13" r="1.2" fill="#E07050"/><circle cx="12" cy="13" r="1.2" fill="#5090C0"/></svg></span><span class="sn-label">艺术</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-studio')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.3" stroke-linecap="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v3M10 15v3M3 10h3M14 10h3"/></svg></span><span class="sn-label">工具</span></div>
+    <div class="sub-nav-item active"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#5B4030" stroke-width="1.2"><path d="M3 3h5c.7 0 .7.7.7.7v10c0-.7-.7-.7-.7-.7H3V3z" fill="#F0E8D8"/><path d="M17 3h-5c-.7 0-.7.7-.7.7v10c0-.7.7-.7.7-.7h5V3z" fill="#E8DCC8"/></svg></span><span class="sn-label">部落</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-town')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.2"><path d="M3 16h14"/><path d="M4.5 16V8l5.5-6 5.5 6v8" stroke="#6B5040"/><rect x="8" y="11" width="4" height="5" fill="#F0E0C8" stroke="#6B5040"/></svg></span><span class="sn-label">小镇</span></div>
+  </div>
+</div>
+
+<!-- PAGE 12: MILA TOWN -->
+<div id="page-town" class="view">
+  <div class="sub-header">
+    <button class="back-btn" onclick="showPage('page-main')">◀</button>
+    <h1><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.2"><path d="M2 15h14"/><path d="M4 15V7l5-5.5 5 5.5v8" stroke="#6B5040"/><rect x="7" y="10" width="4" height="5" fill="#F0E0C8" stroke="#6B5040"/></svg> Mila小镇</h1>
+    <div class="bubble-btn" onclick="showPage('page-chat')" style="font-size:11px;">
+      <img src="mila_avatar.png" style="width:22px;height:22px;border-radius:50%;object-fit:cover;">
+      和Mila聊天
+    </div>
+  </div>
+  <div class="sub-content">
+    <div class="town-map-wrap" id="townMap">
+      <img class="town-bg-img" src="ghibli_town_v4.jpg" alt="Mila小镇">
+      <div class="town-spot" style="left:7%;top:49%;" data-name="稻草人小屋" data-desc="小镇的信息驿站，藏着无数故事和知识的宝藏" data-more="稻草人小屋是小镇最古老的建筑之一，屋主是一位周游世界的旅行者，她在旅途中收集了成千上万的书籍、手绘地图、老照片和录音带。阁楼的四个角落分别代表春夏秋冬——春天的角落放着童谣绘本，夏天的角落摆着探险游记，秋天是收获时节的民间故事集，冬天则是壁炉旁最适合读的温暖诗集。每到满月之夜，屋主会邀请镇上的孩子们来听她讲述旅途中的奇遇。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">稻草人小屋</div>
+      </div>
+      <div class="town-spot" style="left:27%;top:28%;" data-name="四季阁楼" data-desc="四季轮转的藏书阁楼，收藏着世间万物最美好的故事" data-more="四季阁楼是一座螺旋上升的奇妙建筑，每一层都对应一个季节。春之层铺着绿色的地毯，书架上摆满了关于希望与新生的故事绘本；夏之层阳光充沛，收藏着探险与友情的冒险传奇；秋之层弥漫着桂花香，放着诗歌和散文集；冬之层则有着温暖的壁炉和柔软的靠垫，是读睡前故事的最佳去处。阁楼顶层还有一个小小的放映室，每周六会播放经典动画电影，孩子们裹着毛毯看得入迷。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">四季阁楼</div>
+      </div>
+      <div class="town-spot" style="left:48%;top:18%;" data-name="茶屋" data-desc="飘着淡淡茶香的传统茶屋，弥漫着中国文化的温润气息" data-more="茶屋的老板是一位从中国远道而来的老茶人，他带来了上好的龙井、普洱和铁观音。茶屋内陈列着精美的茶具，墙上挂着水墨画和书法作品。每周三下午是"茶话会"时间，孩子们围坐在大茶桌旁，一边品尝桂花糕配茉莉花茶，一边听茶人讲述盘古开天、嫦娥奔月、丝绸之路等古老的传说。逢年过节，茶屋还会教大家写春联、包饺子、做灯笼。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">茶屋</div>
+      </div>
+      <div class="town-spot" style="left:72%;top:8%;" data-name="水晶风铃大厅" data-desc="挂满晶莹风铃的音乐大厅，每阵风都是一场即兴演奏" data-more="水晶风铃大厅是小镇最神奇的建筑——它没有墙壁，取而代之的是数百只大小不一的水晶风铃，用透明的丝线悬挂在穹顶之下。大厅的地面是一块巨大的共鸣板，脚步声会变成低沉的鼓点。每个进入大厅的孩子都能获得一只属于自己的小风铃。大厅中央有一架古老的钢琴，每天傍晚会有即兴演奏会。未来，这里将成为小镇居民共同创作音乐的乐园。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">水晶风铃大厅</div>
+      </div>
+      <div class="town-spot" style="left:61%;top:28%;" data-name="石匠小屋" data-desc="用山间采集的石头砌成的小屋，里面传来细细密密的敲打声" data-more="石匠小屋是小镇工匠精神的象征。屋主是一位沉默寡言却心灵手巧的老石匠，他的祖辈曾为小镇修建了第一座石桥和第一口石井。后院是一个露天的工作坊，孩子们可以在这里学习用石头搭建小房子、雕刻小动物，感受双手创造的快乐。每个完成作品的孩子都能把作品留在展示架上，看着自己的劳动成果被所有人欣赏。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">石匠小屋</div>
+      </div>
+      <div class="town-spot" style="left:42%;top:42%;" data-name="草戈蓬蓬商行" data-desc="热闹非凡的杂货商行，门口总是摆满了各种奇妙的小物件" data-more="草戈蓬蓬商行是小镇最热闹的地方！老板是一位胡子蓬松的大个子叔叔，商行里塞满了来自世界各地的稀奇古怪的宝贝：手工编织的围巾、晒干的薰衣草束、用橡子做的哨子、还有各种颜色的羽毛笔。每个孩子都可以把自己亲手做的东西——折的纸鹤、画的画、种的小盆栽——拿到商行来展示和交换。每月末，商行会举办"小小集市"，让孩子们化身小掌柜，体验交易的乐趣。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">草戈蓬蓬商行</div>
+      </div>
+      <div class="town-spot" style="left:59%;top:41%;" data-name="兽兽研究站" data-desc="温馨的动物研究小站，住着各种各样可爱的电子小动物" data-more="兽兽研究站是小镇里孩子们最喜爱的去处。站里有一台神奇的"生命孵化器"，每个孩子都可以在这里认领一只属于自己的电子小宠物——会发光的萤火虫、爱打滚的毛球、或者总是跟着你跑的小鹿。你需要每天来喂食、遛弯、和它说话，小宠物才会健康长大。研究站的站主是一位温柔的动物学家，她会教你如何照顾小动物，还会分享关于大自然中真实动物的秘密。未来，这里将成为所有小宠物主人交流的乐园。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">兽兽研究站</div>
+      </div>
+      <div class="town-spot" style="left:76%;top:40%;" data-name="木筋工艺坊" data-desc="黑白木筋墙的传统工匠坊，空气中飘着松木和桐油的清香" data-more="木筋工艺坊是小镇手艺人的聚集地。老木匠和他的学徒在这里制作精美的木玩具：会发出清脆声响的风铃、栩栩如生的木雕小动物、还有能拼出各种形状的积木块。每个周末都有免费的手工课，孩子们可以在老师的指导下亲手打磨、上色，做出属于自己的作品。工艺坊墙上挂满了历代学徒留下的优秀作品，每一件都记录着一个小小工匠的成长故事。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">木筋工艺坊</div>
+      </div>
+      <div class="town-spot" style="left:89%;top:74%;" data-name="多洛米蒂咖啡屋" data-desc="飘着咖啡香和画颜料味的温暖小屋，是小镇的创意发源地" data-more="多洛米蒂咖啡屋的老板曾在意大利的阿尔卑斯山脚下学习绘画和烘焙。咖啡屋的一角是画廊，挂着小镇居民们的画作；另一角是手工台，摆着颜料、画布和黏土。每个来这里的客人都可以点一杯热可可或水果茶，然后拿起画笔自由创作。每月一次的"艺术主题日"，老板会介绍一种中国传统艺术——剪纸、扎染、皮影戏、青花瓷绘画……让孩子们在动手体验中感受中国非遗之美。">
+        <div class="town-spot-dot"></div>
+        <div class="town-spot-label">多洛米蒂咖啡屋</div>
+      </div>
+      <div class="town-detail-card" id="townDetailCard">
+        <button class="td-close" onclick="hideTownDetail()">✕</button>
+        <div class="td-name" id="tdName"></div>
+        <div class="td-desc" id="tdDesc"></div>
+        <div class="td-more" id="tdMore"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sub-nav">
+    <div class="sub-nav-item" onclick="showPage('page-main')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3L3 12h3v9h6v-6h3v6h6v-9h3L12 3z" fill="#F0E8D8" stroke="#5B4030" stroke-width="1.5"/>
+  <path d="M10 8c1-0.5 2-0.5 3 0" stroke="#C08060" stroke-width="0.8"/>
+  <path d="M12 14l-1.5 1.5L12 17l1.5-1.5L12 14z" fill="#E8A0A0" stroke="#C06060" stroke-width="0.6"/>
+</svg></span><span class="sn-label">首页</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-mood')"><span class="sn-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="5" r="3" fill="#F8D070" stroke="#D4A030" stroke-width="1"/>
+  <path d="M9 8a6 6 0 016 0" stroke="#E8A040" stroke-width="1.5" fill="none"/>
+  <path d="M7 10a8 8 0 0110 0" stroke="#E86060" stroke-width="1.2" fill="none" opacity="0.8"/>
+  <path d="M5 12a10 10 0 0114 0" stroke="#60B060" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M10 18c-1-1.5-2.5-1.5-3.5 0s-1.5 2.5-0.5 4c1 1 2.5 1 3.5-0.5" fill="#E8C0D0" stroke="#C090A0" stroke-width="0.8"/>
+  <path d="M14 16c1-1 2.5-0.5 3 1s0 2.5-1.5 3c-1.5 0.5-2.5-0.5-2-2" fill="#C0D8E8" stroke="#8090B0" stroke-width="0.8"/>
+  <path d="M18 14l1.5-2 1.5 2-1.5 2z" fill="#F0E0A0" stroke="#C0A040" stroke-width="0.8"/>
+</svg></span><span class="sn-label">心情</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-art')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#8B6040" stroke-width="1.2"><circle cx="10" cy="14" r="5" fill="#F0E0C8" stroke="#8B6040"/><circle cx="8" cy="13" r="1.2" fill="#E07050"/><circle cx="12" cy="13" r="1.2" fill="#5090C0"/></svg></span><span class="sn-label">艺术</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-studio')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.3" stroke-linecap="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v3M10 15v3M3 10h3M14 10h3"/></svg></span><span class="sn-label">工具</span></div>
+    <div class="sub-nav-item" onclick="showPage('page-blog')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#5B4030" stroke-width="1.2"><path d="M3 3h5c.7 0 .7.7.7.7v10c0-.7-.7-.7-.7-.7H3V3z" fill="#F0E8D8"/><path d="M17 3h-5c-.7 0-.7.7-.7.7v10c0-.7.7-.7.7-.7h5V3z" fill="#E8DCC8"/></svg></span><span class="sn-label">部落</span></div>
+    <div class="sub-nav-item active" onclick="showPage('page-town')"><span class="sn-icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#6B5040" stroke-width="1.2"><path d="M3 16h14"/><path d="M4.5 16V8l5.5-6 5.5 6v8" stroke="#6B5040"/><rect x="8" y="11" width="4" height="5" fill="#F0E0C8" stroke="#6B5040"/></svg></span><span class="sn-label">小镇</span></div>
+  </div>
+</div>
+
+<!-- PAGE 9: CHAT -->
+<div id="page-chat" class="view">
+  <div class="chat-deco d1"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M12 4c-4 0-7 2-7 6 0 3 2 5 4 6l-1 4h8l-1-4c2-1 4-3 4-6 0-4-3-6-7-6z" fill="#F0D8E0" stroke="#C08090" stroke-width="1"/></svg></div>
+  <div class="chat-deco d2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><rect x="5" y="8" width="14" height="12" rx="3" fill="#E0E0E8" stroke="#6B6080" stroke-width="1"/><circle cx="9" cy="14" r="1.5" fill="#6B6080"/><circle cx="15" cy="14" r="1.5" fill="#6B6080"/></svg></div>
+  <div class="chat-deco d3"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M6 20c0-4 2-6 4-8 1-1 2-2 3-4 1-2 3-4 5-4" fill="#C0D8B0" stroke="#5B8050" stroke-width="1.2"/></svg></div>
+  <div class="chat-deco d4"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#F0E0A0" stroke="#C0A030" stroke-width="1"/></svg></div>
+  <div class="chat-deco d5"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><circle cx="12" cy="12" r="9" fill="#E8C890" stroke="#A08050" stroke-width="1"/></svg></div>
+  <div class="chat-header">
+    <button class="chat-back" onclick="showPage('page-main')">◀</button>
+    <div class="chat-avatar"><img src="mila_avatar.png"></div>
+    <span class="chat-brand">Mila</span>
+    <span class="chat-status"><span class="online-dot"></span>在线</span>
+    <div class="bubble-btn" onclick="showPage('page-town')" style="font-size:11px;position:absolute;right:12px;top:50px;">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="#5B4030" stroke-width="1.2" stroke-linecap="round"><path d="M3 14h10"/><path d="M4 14V7l4-5 4 5v7" stroke="#5B4030"/><rect x="7" y="10" width="2" height="4" fill="#F0E0C8" stroke="#5B4030"/></svg>
+      Mila小镇
+    </div>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-bubble mila slide-up">你好呀！我是 Mila<br>有什么想和我聊的吗？<br>可以告诉我你的心情，或者任何烦恼哦～<div class="bubble-time">刚刚</div></div>
+  </div>
+  <div class="chat-typing" id="chatTyping"><span>●</span><span>●</span><span>●</span></div>
+  <div class="chat-input-wrap">
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="输入消息..." onkeypress="if(event.key==='Enter')sendChat()">
+      <div class="chat-actions">
+        <button class="chat-action-btn" onclick="setChatMode('voice')" title="语音条">🎙️</button>
+        <button class="chat-action-btn" onclick="setChatMode('live')" title="实时语音">🎤</button>
+        <button class="chat-action-btn" onclick="setChatMode('visual')" title="视觉">👁️</button>
+        <button class="chat-send-btn" onclick="sendChat()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 10: GUARDIAN PORTAL (Reference-Aligned) -->
+<div id="page-guardian" class="view">
+  <div class="guard-header">
+    <h1>Mila 监护人端</h1>
+  </div>
+  <div class="guard-date-wrap">
+    <span class="guard-date" id="guardDate">2026年7月3日</span>
+  </div>
+  <div class="guard-alert-bar" onclick="openGuardianAlertPanel()">
+    <span class="ga-bar-text"><span id="guardAlertBadge" class="ga-bar-badge" style="display:none"></span> 实时警报推送</span>
+    <span class="ga-bar-arrow">▶</span>
+  </div>
+  <div class="guard-content">
+    <div class="guard-cards">
+      <div class="guard-card report" onclick="openReportPanel()">
+        <span class="gc-label">调阅报告</span>
+      </div>
+      <div class="guard-card alert" onclick="openGuardianAlertHistoryPanel()">
+        <span class="gc-label">查看警报!</span>
+      </div>
+    </div>
+    <div class="guard-settings">
+      <div class="guard-setting-item">
+        <span class="gs-label">安全设置</span>
+        <button class="gs-btn" onclick="toast('安全设置功能开发中')">进入</button>
+      </div>
+      <div class="guard-setting-item">
+        <span class="gs-label">专业人士/机构</span>
+        <button class="gs-btn" onclick="showPage('page-professional')">进入</button>
+      </div>
+    </div>
+    <div class="guard-perm-section">
+      <div class="guard-perm-title"><svg viewBox="0 0 16 16" width="14" height="14" fill="none"><rect x="2" y="7" width="12" height="8" rx="1.5" fill="#E0D8C8" stroke="#6B5040" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="#6B5040" stroke-width="1.2"/></svg> 内容访问（需孩子授权）</div>
+      <div class="guard-perm-list">
+        <div class="guard-perm-item" onclick="requestPermission('blog')"><span>📚 部落格</span><span class="guard-perm-status" id="permStatus-blog">申请</span></div>
+        <div class="guard-perm-item" onclick="requestPermission('studio')"><span>⚙️ 手账与工具间</span><span class="guard-perm-status" id="permStatus-studio">申请</span></div>
+        <div class="guard-perm-item" onclick="requestPermission('art')"><span>🎨 艺术派</span><span class="guard-perm-status" id="permStatus-art">申请</span></div>
+      </div>
+    </div>
+    <div class="guard-footer">
+      <a onclick="toast('帮助与反馈')">帮助与反馈</a>
+    </div>
+  </div>
+  <!-- Alert Panel (unread only) -->
+  <div class="ga-panel" id="guardAlertPanel" onclick="if(event.target===this)closeGuardianAlertPanel()">
+    <div class="ga-panel-inner">
+      <div class="ga-panel-header">
+        <h2><svg viewBox="0 0 18 18" width="16" height="16" fill="none"><circle cx="9" cy="10" r="6" fill="#F0E0D0" stroke="#C06040" stroke-width="1.2"/><path d="M9 4v3M9 10v1.5" stroke="#C06040" stroke-width="1.5"/></svg> 实时警报（未读）</h2>
+        <span class="ga-close" onclick="closeGuardianAlertPanel()">✕</span>
+      </div>
+      <div class="ga-panel-list" id="guardAlertList"></div>
+      <div style="padding:12px 16px;font-size:12px;color:#A0897A;text-align:center">请逐条点击"标记已读"以消除推送</div>
+    </div>
+  </div>
+  <!-- Alert History Panel -->
+  <div class="ga-panel" id="guardAlertHistoryPanel" onclick="if(event.target===this)closeGuardianAlertHistoryPanel()">
+    <div class="ga-panel-inner">
+      <div class="ga-panel-header">
+        <h2><svg viewBox="0 0 18 18" width="16" height="16" fill="none"><rect x="3" y="2" width="12" height="14" rx="1" fill="#F8F4EC" stroke="#5B5040" stroke-width="1.2"/><path d="M6 5h6M6 8h6M6 11h4" stroke="#5B5040" stroke-width="0.8"/></svg> 警报日志</h2>
+        <span class="ga-close" onclick="closeGuardianAlertHistoryPanel()">✕</span>
+      </div>
+      <div class="ga-panel-list" id="guardAlertHistoryList"></div>
+    </div>
+  </div>
+  <!-- Log Panel -->
+  <div class="ga-panel" id="guardLogPanel" onclick="if(event.target===this)closeGuardianLogPanel()">
+    <div class="ga-panel-inner">
+      <div class="ga-panel-header">
+        <h2><svg viewBox="0 0 18 18" width="16" height="16" fill="none"><rect x="3" y="2" width="12" height="14" rx="1" fill="#F8F4EC" stroke="#5B5040" stroke-width="1.2"/><path d="M6 5h6M6 8h6M6 11h4" stroke="#5B5040" stroke-width="0.8"/></svg> 监护日志</h2>
+        <span class="ga-close" onclick="closeGuardianLogPanel()">✕</span>
+      </div>
+      <div class="ga-filter">
+        <button class="ga-filter-btn active" onclick="renderGuardianLogs('all');document.querySelectorAll('.ga-filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">全部</button>
+        <button class="ga-filter-btn" onclick="renderGuardianLogs('chat');document.querySelectorAll('.ga-filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">聊天</button>
+        <button class="ga-filter-btn" onclick="renderGuardianLogs('mood');document.querySelectorAll('.ga-filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">心情</button>
+      </div>
+      <div class="ga-panel-list" id="guardLogList"></div>
+    </div>
+  </div>
+  <!-- Report Panel -->
+  <div class="ga-panel" id="guardReportPanel" onclick="if(event.target===this)closeReportPanel()">
+    <div class="ga-panel-inner">
+      <div class="ga-panel-header">
+        <h2><svg viewBox="0 0 18 18" width="16" height="16" fill="none"><rect x="2" y="9" width="3" height="6" rx=".5" fill="#A0C0A0" stroke="#5B6060" stroke-width="1"/><rect x="7.5" y="5" width="3" height="10" rx=".5" fill="#C0A0A0" stroke="#5B6060" stroke-width="1"/><rect x="13" y="2" width="3" height="13" rx=".5" fill="#A0A0C0" stroke="#5B6060" stroke-width="1"/></svg> 周期状态报告</h2>
+        <span class="ga-close" onclick="closeReportPanel()">✕</span>
+      </div>
+      <div class="ga-panel-list" id="guardReportContent"></div>
+    </div>
+  </div>
+  <!-- Permission Request Status Panel -->
+  <div class="ga-panel" id="permRequestPanel" onclick="if(event.target===this)cancelPermissionRequest()">
+    <div class="ga-panel-inner" style="height:40%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+      <div style="font-size:40px"><svg viewBox="0 0 40 40" width="40" height="40" fill="none"><path d="M10 3h20v6l-10 5-10-5V3z" fill="#E0D8C8" stroke="#8B7060" stroke-width="1.5"/><circle cx="20" cy="30" r="5" fill="#D4C0A0" stroke="#8B7060" stroke-width="1.5"/><path d="M20 15v10" stroke="#8B7060" stroke-width="1.5"/></svg></div>
+      <div style="font-size:15px;font-weight:600;color:#1a2744" id="permRequestStatus">等待孩子授权...</div>
+      <button class="ga-readall-btn" onclick="cancelPermissionRequest()">取消申请</button>
+    </div>
+  </div>
+  <!-- Permission Content Panel -->
+  <div class="ga-panel" id="permContentPanel" onclick="if(event.target===this)closePermissionContent()">
+    <div class="ga-panel-inner">
+      <div class="ga-panel-header">
+        <h2 id="permContentTitle">内容</h2>
+        <span class="ga-close" onclick="closePermissionContent()">✕</span>
+      </div>
+      <div class="ga-panel-list" id="permContentBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 11: PROFESSIONAL PORTAL -->
+<div id="page-professional" class="view">
+  <div class="pro-header">
+    <div class="pro-header-inner">
+      <h1>Mila 专业人士端</h1>
+      <span class="pro-date" id="proDate">2026年7月3日</span>
+    </div>
+  </div>
+  <div class="pro-content">
+    <div class="pro-top-row">
+      <div class="pro-left-col">
+        <button class="pro-left-btn" onclick="toast('待处理功能开发中')"><span class="plb-label">待处理</span></button>
+        <button class="pro-left-btn" onclick="toast('进度查询功能开发中')"><span class="plb-label">进度查询</span></button>
+      </div>
+      <div class="pro-right-card" onclick="toast('我的共享资源库功能开发中')">
+        <span class="prc-title">我的共享<br>资源库</span>
+        <div class="prc-icon">
+          <svg viewBox="0 0 32 32" fill="none">
+            <rect x="4" y="16" width="5" height="12" rx="1.5" fill="white" opacity="0.8"/>
+            <rect x="13.5" y="8" width="5" height="20" rx="1.5" fill="white" opacity="0.9"/>
+            <rect x="23" y="3" width="5" height="25" rx="1.5" fill="white"/>
+            <path d="M27 3L29 7L25 7L27 3Z" fill="white"/>
+            <path d="M27 7L30 12L24 12L27 7Z" fill="white" opacity="0.7"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="pro-list">
+      <div class="pro-list-item">
+        <span class="pli-label">我的学生</span>
+        <button class="pli-btn" onclick="toast('我的学生功能开发中')">进入</button>
+      </div>
+      <div class="pro-list-item">
+        <span class="pli-label">警报标注</span>
+        <button class="pli-btn" onclick="toast('警报标注功能开发中')">进入</button>
+      </div>
+      <div class="pro-list-item">
+        <span class="pli-label">数据导出</span>
+        <button class="pli-btn" onclick="toast('数据导出功能开发中')">进入</button>
+      </div>
+    </div>
+    <div class="pro-footer">
+      <a onclick="toast('帮助与反馈')">帮助与反馈</a>
+    </div>
+  </div>
+</div>
+
+<!-- Child Permission Popup -->
+<div class="perm-popup" id="childPermPopup">
+  <div class="perm-popup-box">
+    <div class="perm-popup-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" fill="#E0D8C8" stroke="#6B5040" stroke-width="1.5"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#6B5040" stroke-width="1.5"/><circle cx="12" cy="16" r="2" fill="#D4A030"/></svg></div>
+    <div class="perm-popup-title">权限申请</div>
+    <div class="perm-popup-text" id="childPermText">监护人希望查看你的内容</div>
+    <div class="perm-popup-btns">
+      <button class="perm-popup-deny" onclick="denyPermission(localStorage.getItem('mila_pending_permission'))">拒绝</button>
+      <button class="perm-popup-allow" onclick="grantPermission(localStorage.getItem('mila_pending_permission'))">允许</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const LOGIN_MASCOTS = ['🐰','🐻','🐱','🐶','🦊','🐼','🐨','🦁','🐯','🐹','🦋','🐙','🐳','🦜','🐿️','🦔'];
+const QUOTES = [
+  '真诚的朋友是人生最珍贵的礼物', // 友情
+  '真正的勇敢是即使害怕也依然向前 🦁', // 勇气
+  '保持一颗纯真的心，世界会变得更美好 🌸', // 纯真
+  '诚实的人永远值得被信任 💎', // 诚实
+  '对世界保持好奇，每天都是新的冒险 🔍', // 求知
+  '用温暖的心对待身边每一个人 💚', // 爱心
+  '虚心使人进步，骄傲使人落后 📖', // 谦虚
+  '友谊就像一颗种子，需要用心浇灌才能开花 🌱', // 友情
+  '勇敢不是不害怕，而是害怕的时候依然坚持 💪', // 勇气
+  '心里装着好奇，眼里就会看到精彩的世界 ✨', // 求知
+  '真诚待人，收获的会是真心朋友 🤝', // 友情
+  '保持谦逊，才能不断学习新的本领 🌿', // 谦虚
+  '一颗善良的心，能照亮身边所有人 🌞', // 爱心
+  '诚实比聪明更可贵，因为它让一切变得真实 🌈', // 诚实
+  '对世界充满好奇的孩子，永远有无限可能 🚀', // 求知
+];
+
+function checkLoginInput(){
+  const val = document.getElementById('loginName').value.trim();
+  document.getElementById('loginEnterBtn').disabled = !val;
+}
+function doLogin(){
+  const name = document.getElementById('loginName').value.trim();
+  if(!name) return;
+  localStorage.setItem('mila_username', name);
+  showPage('page-news');
+}
+function setRandomQuote(){
+  document.getElementById('entryQuote').textContent = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+}
+function setChatMode(mode){
+  document.querySelectorAll('.chat-mode-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.chat-mode-btn[data-mode="'+mode+'"]').classList.add('active');
+  const input = document.getElementById('chatInput');
+  const placeholder = {text:'输入消息...',voice:'点击语音按钮录制语音消息...',live:'实时语音模式已开启...',visual:'视觉模式 - 可发送图片或表情...'};
+  input.placeholder = placeholder[mode] || '输入消息...';
+  toast('已切换到' + (mode==='text'?'文字':mode==='voice'?'语音条':mode==='live'?'实时语音':'视觉') + '输入模式');
+}
+
+const ART_URLS = ["art1_s.jpg","art2_s.jpg","art3_s.jpg","art4_s.jpg","art5_s.jpg","art6_s.jpg","art7_s.jpg","art8_s.jpg"];
+const MOODS = {'开心':'😊','兴奋':'🤩','平静':'😌','困倦':'😴','难过':'😢','生气':'😠','担心':'😰','惊讶':'😲','害羞':'😳','爱你':'🥰'};const MOOD_SVG = {'开心':'happy','兴奋':'excited','平静':'calm','困倦':'sleepy','难过':'sad','生气':'angry','担心':'worried','惊讶':'surprised','害羞':'shy','爱你':'love'};
+let selectedMood = null;
+let moodHistory = JSON.parse(localStorage.getItem('mila_moods')||'[]');
+let blogPosts = JSON.parse(localStorage.getItem('mila_blogs')||'[{"title":"我的第一篇日记","body":"今天是我第一次使用Mila，感觉好开心！希望每天都能记录自己的心情。","date":"2026-07-02 09:00"}]');
+let artFavorites = JSON.parse(localStorage.getItem('mila_art_fav')||'[]');
+let guardianLogs = JSON.parse(localStorage.getItem('mila_guardian_logs')||'[]');
+let guardianAlerts = JSON.parse(localStorage.getItem('mila_guardian_alerts')||'[]');
+
+const DANGER_KEYWORDS = ['自杀','自残','不想活','活着没意思','想死','杀','死','死亡','流血','伤害','绝望','痛苦','恐惧','害怕','被虐待','打我','杀掉','想离开','告别','结束生命','没有希望','想消失','活不下去','割腕','跳楼','吃药'];
+const POSITIVE_MOODS = ['开心','兴奋','平静','爱你'];
+const NEGATIVE_MOODS = ['难过','生气','担心','害羞'];
+
+function checkDangerousContent(text){
+  const lower = text.toLowerCase();
+  for(const kw of DANGER_KEYWORDS){ if(lower.includes(kw)) return true; }
+  return false;
+}
+
+function getMoodCategory(mood){
+  if(POSITIVE_MOODS.includes(mood)) return 'positive';
+  if(NEGATIVE_MOODS.includes(mood)) return 'negative';
+  return 'neutral';
+}
+
+function addGuardianLog(type, data){
+  const entry = {type:type, data:data, timestamp:new Date().toLocaleString('zh-CN'), id:Date.now()+Math.random().toString(36).substr(2,5)};
+  guardianLogs.unshift(entry);
+  localStorage.setItem('mila_guardian_logs', JSON.stringify(guardianLogs.slice(0,200)));
+  return entry;
+}
+
+function addGuardianAlert(level, title, detail){
+  const alert = {level:level, title:title, detail:detail, timestamp:new Date().toLocaleString('zh-CN'), read:false, id:Date.now()+Math.random().toString(36).substr(2,5)};
+  guardianAlerts.unshift(alert);
+  localStorage.setItem('mila_guardian_alerts', JSON.stringify(guardianAlerts.slice(0,100)));
+  renderGuardianAlerts();
+  return alert;
+}
+
+function markAlertRead(id){
+  const a = guardianAlerts.find(x=>x.id===id);
+  if(a){ a.read=true; localStorage.setItem('mila_guardian_alerts', JSON.stringify(guardianAlerts)); renderGuardianAlerts(); renderGuardianAlertHistory(); }
+}
+
+function renderGuardianAlerts(){
+  const container = document.getElementById('guardAlertList');
+  const badge = document.getElementById('guardAlertBadge');
+  const unread = guardianAlerts.filter(a=>!a.read);
+  if(badge){ badge.textContent = unread.length > 0 ? unread.length : ''; badge.style.display = unread.length > 0 ? 'flex' : 'none'; }
+  if(!container) return;
+  const unreads = guardianAlerts.filter(a=>!a.read);
+  if(unreads.length===0){ container.innerHTML='<div style="padding:16px;text-align:center;color:#A0897A;font-size:13px">暂无未读警报 ✓</div>'; return; }
+  container.innerHTML = unreads.slice(0,20).map(a=>`
+    <div class="ga-item unread ${a.level==='high'?'high':'low'}">
+      <div class="ga-dot"></div>
+      <div class="ga-body">
+        <div class="ga-title">${a.level==='high'?'🚨':'🔔'} ${a.title}</div>
+        <div class="ga-detail">${a.detail}</div>
+        <div class="ga-time">${a.timestamp}</div>
+        <button class="ga-read-btn" onclick="markAlertRead('${a.id}');event.stopPropagation();">标记已读</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderGuardianAlertHistory(){
+  const container = document.getElementById('guardAlertHistoryList');
+  if(!container) return;
+  const all = [...guardianAlerts].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  if(all.length===0){ container.innerHTML='<div style="padding:16px;text-align:center;color:#A0897A;font-size:13px">暂无警报记录</div>'; return; }
+  container.innerHTML = all.map(a=>`
+    <div class="ga-item ${a.read?'read':'unread'} ${a.level==='high'?'high':'low'}">
+      <div class="ga-dot"></div>
+      <div class="ga-body">
+        <div class="ga-title">${a.level==='high'?'🚨':'🔔'} ${a.title} ${a.read?'(已读)':'<span style="color:#8B3020">(未读)</span>'}</div>
+        <div class="ga-detail">${a.detail}</div>
+        <div class="ga-time">${a.timestamp}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderGuardianLogs(filterType){
+  const container = document.getElementById('guardLogList');
+  if(!container) return;
+  let logs = guardianLogs;
+  if(filterType && filterType!=='all') logs = logs.filter(l=>l.type===filterType);
+  if(logs.length===0){ container.innerHTML='<div style="padding:16px;text-align:center;color:#A0897A;font-size:13px">暂无记录</div>'; return; }
+  container.innerHTML = logs.slice(0,50).map(l=>{
+    const icon = l.type==='chat'?'💬':l.type==='mood'?'🌈':'📝';
+    const label = l.type==='chat'?'聊天':l.type==='mood'?'心情':'其他';
+    const detail = l.type==='chat' ? `检测到危险内容: "${l.data.msg.substring(0,30)}${l.data.msg.length>30?'...':''}"`
+      : l.type==='mood' ? `${l.data.mood} ${l.data.emoji} ${l.data.note?`· "${l.data.note.substring(0,30)}${l.data.note.length>30?'...':''}"`:''}`
+      : JSON.stringify(l.data);
+    return `<div class="gl-item"><span class="gl-icon">${icon}</span><div class="gl-body"><div class="gl-label">${label}</div><div class="gl-detail">${detail}</div><div class="gl-time">${l.timestamp}</div></div></div>`;
+  }).join('');
+}
+
+function generateWeeklyReport(){
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7*24*60*60*1000);
+  const weekLogs = guardianLogs.filter(l=>new Date(l.timestamp.replace(/-/g,'/'))>=weekAgo);
+  const moodLogs = weekLogs.filter(l=>l.type==='mood');
+  const chatLogs = weekLogs.filter(l=>l.type==='chat');
+  const negMoods = moodLogs.filter(l=>getMoodCategory(l.data.mood)==='negative');
+  const posMoods = moodLogs.filter(l=>getMoodCategory(l.data.mood)==='positive');
+  const dangerChats = chatLogs.filter(l=>l.data.flagged);
+  let moodSummary = '本周未记录心情。';
+  if(moodLogs.length>0){
+    const negRatio = Math.round((negMoods.length/moodLogs.length)*100);
+    moodSummary = `本周共记录 ${moodLogs.length} 次心情，其中消极心情占 ${negRatio}%（${negMoods.length}次），积极心情占 ${Math.round((posMoods.length/moodLogs.length)*100)}%（${posMoods.length}次）。`;
+  }
+  let chatSummary = '本周未发现危险聊天内容。';
+  if(dangerChats.length>0){
+    chatSummary = `本周检测到 ${dangerChats.length} 次包含危险意味的聊天内容，请及时关注孩子的心理状态。`;
+  }
+  const avgMood = moodLogs.length>0 ? Math.round(moodLogs.length/7*10)/10 : 0;
+  return {period:`${weekAgo.toLocaleDateString('zh-CN')} - ${now.toLocaleDateString('zh-CN')}`,moodSummary,chatSummary,avgMood:moodLogs.length>0?`平均每天记录 ${avgMood} 次心情`:'暂无心情记录',negCount:negMoods.length,dangerCount:dangerChats.length,totalMood:moodLogs.length};
+}
+
+function openGuardianAlertPanel(){ document.getElementById('guardAlertPanel').classList.add('active'); renderGuardianAlerts(); }
+function closeGuardianAlertPanel(){ document.getElementById('guardAlertPanel').classList.remove('active'); }
+function openGuardianAlertHistoryPanel(){ document.getElementById('guardAlertHistoryPanel').classList.add('active'); renderGuardianAlertHistory(); }
+function closeGuardianAlertHistoryPanel(){ document.getElementById('guardAlertHistoryPanel').classList.remove('active'); }
+function openGuardianLogPanel(){ document.getElementById('guardLogPanel').classList.add('active'); renderGuardianLogs('all'); }
+function closeGuardianLogPanel(){ document.getElementById('guardLogPanel').classList.remove('active'); }
+function openReportPanel(){ document.getElementById('guardReportPanel').classList.add('active'); renderWeeklyReport(); }
+function closeReportPanel(){ document.getElementById('guardReportPanel').classList.remove('active'); }
+
+function renderWeeklyReport(){
+  const container = document.getElementById('guardReportContent');
+  if(!container) return;
+  const r = generateWeeklyReport();
+  container.innerHTML = `
+    <div class="gr-section">
+      <div class="gr-label">📅 报告周期</div>
+      <div class="gr-value">${r.period}</div>
+    </div>
+    <div class="gr-section">
+      <div class="gr-label">🌈 心情概况</div>
+      <div class="gr-value">${r.moodSummary}</div>
+      <div class="gr-sub">${r.avgMood}</div>
+    </div>
+    <div class="gr-section">
+      <div class="gr-label">💬 聊天安全</div>
+      <div class="gr-value">${r.chatSummary}</div>
+    </div>
+    <div class="gr-section">
+      <div class="gr-label">📊 数据摘要</div>
+      <div class="gr-stats">
+        <div class="gr-stat"><span class="gr-stat-num">${r.totalMood}</span><span class="gr-stat-label">心情记录</span></div>
+        <div class="gr-stat"><span class="gr-stat-num" style="color:${r.negCount>0?'#8B3020':'#1a2744'}">${r.negCount}</span><span class="gr-stat-label">消极心情</span></div>
+        <div class="gr-stat"><span class="gr-stat-num" style="color:${r.dangerCount>0?'#8B3020':'#1a2744'}">${r.dangerCount}</span><span class="gr-stat-label">危险聊天</span></div>
+      </div>
+    </div>
+    <div class="gr-notice">⚠️ 本报告基于孩子与 Mila 的互动数据自动生成，仅供监护人参考。如有疑虑，请及时与孩子沟通或寻求专业帮助。</div>
+  `;
+}
+
+/* PERMISSION SYSTEM */
+const PERMISSION_MODULES = {blog:'部落格',studio:'手账与工具间',art:'艺术派'};
+let permissions = JSON.parse(localStorage.getItem('mila_permissions')||'{"blog":false,"studio":false,"art":false}');
+let pendingPermission = localStorage.getItem('mila_pending_permission')||null;
+
+function savePermissions(){ localStorage.setItem('mila_permissions', JSON.stringify(permissions)); }
+function savePendingPermission(v){ if(v){localStorage.setItem('mila_pending_permission',v);pendingPermission=v;}else{localStorage.removeItem('mila_pending_permission');pendingPermission=null;} }
+
+function requestPermission(module){
+  if(permissions[module]){ openPermissionContent(module); return; }
+  savePendingPermission(module);
+  toast(`已向孩子发送"${PERMISSION_MODULES[module]}"访问申请`);
+  document.getElementById('permRequestStatus').textContent = `等待孩子授权: ${PERMISSION_MODULES[module]}`;
+  document.getElementById('permRequestPanel').classList.add('active');
+}
+
+function cancelPermissionRequest(){ savePendingPermission(null); document.getElementById('permRequestPanel').classList.remove('active'); }
+
+function grantPermission(module){
+  permissions[module]=true; savePermissions(); savePendingPermission(null);
+  toast(`已允许监护人访问${PERMISSION_MODULES[module]}`);
+  document.getElementById('childPermPopup').classList.remove('active');
+}
+
+function denyPermission(module){
+  savePendingPermission(null);
+  toast(`已拒绝监护人访问${PERMISSION_MODULES[module]}`);
+  document.getElementById('childPermPopup').classList.remove('active');
+}
+
+function openPermissionContent(module){
+  const p = document.getElementById('permContentPanel');
+  const title = document.getElementById('permContentTitle');
+  const body = document.getElementById('permContentBody');
+  title.textContent = PERMISSION_MODULES[module];
+  if(module==='blog'){
+    const posts = JSON.parse(localStorage.getItem('mila_blogs')||'[]');
+    body.innerHTML = posts.length===0?'<div style="padding:20px;text-align:center;color:#A0897A">暂无文章</div>':posts.map(p=>`<div style="padding:12px;border-bottom:1px solid rgba(0,0,0,0.04)"><div style="font-weight:600;font-size:14px;color:#1a2744">${p.title}</div><div style="font-size:12px;color:#6B6B6B;margin-top:4px">${p.body.substring(0,80)}${p.body.length>80?'...':''}</div><div style="font-size:10px;color:#A0897A;margin-top:4px">${p.date}</div></div>`).join('');
+  }else if(module==='art'){
+    const favs = JSON.parse(localStorage.getItem('mila_art_fav')||'[]');
+    body.innerHTML = favs.length===0?'<div style="padding:20px;text-align:center;color:#A0897A">暂无收藏</div>':`<div class="art-gallery">${favs.map(url=>`<div class="art-card"><img src="${url}" style="width:100%;height:140px;object-fit:cover;border-radius:12px"></div>`).join('')}</div>`;
+  }else{
+    body.innerHTML = '<div style="padding:20px;text-align:center;color:#A0897A">手账与工具间的内容将在功能开发完成后展示</div>';
+  }
+  p.classList.add('active');
+}
+
+function closePermissionContent(){ document.getElementById('permContentPanel').classList.remove('active'); }
+
+function checkPermissionRequests(){
+  const p = localStorage.getItem('mila_pending_permission');
+  if(p && PERMISSION_MODULES[p]){
+    document.getElementById('childPermText').textContent = `监护人希望查看你的"${PERMISSION_MODULES[p]}"内容，是否允许？`;
+    document.getElementById('childPermPopup').classList.add('active');
+  }
+}
+
+function checkPermissionGranted(){
+  const p = localStorage.getItem('mila_pending_permission');
+  if(!p && pendingPermission){
+    pendingPermission=null;
+    document.getElementById('permRequestPanel').classList.remove('active');
+    toast('孩子已响应权限申请');
+  }
+}
+
+let currentArtPool = [];
+const NAMES = ['小明','小红','小雨','小星','小月','小阳','小风','小雪','小云','小花'];
+const MASCOTS = ['🐰','🐻','🐱','🐶','🦊','🐼','🐨','🦁','🐯','🐹'];
+
+function init(){
+  const d = new Date(); document.getElementById('proDate').textContent = d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+  document.getElementById('guardDate').textContent = d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+  document.getElementById('loginMascot').textContent = MASCOTS[Math.floor(Math.random()*MASCOTS.length)];
+  document.getElementById('loginQuote').textContent = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  document.getElementById('entryName').textContent = 'Hi! ' + localStorage.getItem('mila_username') || NAMES[Math.floor(Math.random()*NAMES.length)];
+  document.getElementById('entryMascot').textContent = MASCOTS[Math.floor(Math.random()*MASCOTS.length)];
+  setRandomQuote();
+  setTimeout(()=>showPage('page-login'), 2500);
+  renderMoodHistory();
+  renderBlogList();
+  generateArt();
+  renderFavorites();
+  renderGuardianAlerts();
+  setInterval(checkPermissionRequests, 2000);
+  setInterval(checkPermissionGranted, 2000);
+}
+
+function showPage(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const page = document.getElementById(id);
+  page.classList.add('active');
+  page.classList.add('fade-in');
+  setTimeout(()=>page.classList.remove('fade-in'), 500);
+}
+
+function selectCustomMood(el){
+  document.querySelectorAll('.mood-emoji-item').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  const input = prompt('输入你的自定义心情名称：');
+  if(input && input.trim()){
+    selectedMood = input.trim();
+  } else {
+    el.classList.remove('selected');
+    selectedMood = null;
+  }
+}
+function selectMood(el){
+  document.querySelectorAll('.mood-emoji-item').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMood = el.dataset.mood;
+}
+function saveMood(){
+  if(!selectedMood){toast('请先选择一个心情表情');return;}
+  const note = document.getElementById('moodNote').value.trim();
+  const entry = {mood:selectedMood,emoji:MOODS[selectedMood],note:note,date:new Date().toLocaleString('zh-CN')};
+  moodHistory.unshift(entry);
+  localStorage.setItem('mila_moods', JSON.stringify(moodHistory));
+  // Guardian mood log
+  const cat = getMoodCategory(selectedMood);
+  addGuardianLog('mood', entry);
+  if(cat==='negative'){
+    addGuardianAlert('low', `孩子心情低落: ${selectedMood}`, `孩子记录了 ${selectedMood} ${MOODS[selectedMood]} 的心情${note?`, 留言: "${note.substring(0,30)}${note.length>30?'...':''}"`:''} — 请关注孩子状态。`);
+  }
+  document.getElementById('moodNote').value = '';
+  document.querySelectorAll('.mood-emoji-item').forEach(i=>i.classList.remove('selected'));
+  selectedMood = null;
+  renderMoodHistory();
+  toast('心情已保存');
+}
+function renderMoodHistory(){
+  const container = document.getElementById('moodHistory');
+  if(moodHistory.length===0){container.innerHTML='<div style="text-align:center;padding:20px;color:var(--c-text-lt);font-size:13px">还没有心情记录<br>开始记录你的第一个心情吧</div>';return;}
+  container.innerHTML = moodHistory.slice(0,20).map((h,i)=>`
+    <div class="mood-record collapsed" id="mr${i}" onclick="toggleMoodRecord(${i})">
+      <div class="mr-header">
+        <span class="mr-emoji">${h.emoji}</span>
+        <div class="mr-body">
+          <div class="mr-date">${h.date} · ${h.mood}</div>
+        </div>
+        <span class="mr-toggle">展开</span>
+      </div>
+      <div class="mr-detail">${h.note||'没有留言'}</div>
+    </div>
+  `).join('');
+}
+function toggleMoodRecord(i){
+  const el = document.getElementById('mr'+i);
+  const toggle = el.querySelector('.mr-toggle');
+  if(el.classList.contains('collapsed')){
+    el.classList.remove('collapsed');
+    toggle.textContent = '收起';
+  } else {
+    el.classList.add('collapsed');
+    toggle.textContent = '展开';
+  }
+}
+
+function generateArt(){
+  const pool = [...ART_URLS];
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  currentArtPool = pool.slice(0,4);
+  const titles = ['彩虹花园','金色调色盘','梦幻森林','温馨小屋','云端猫咪','向日葵田','魔法月夜','星空热气球'];
+  const tags = ['治愈','可爱','梦幻','温暖','宁静','美好','清新','童话'];
+  const gallery = document.getElementById('artGallery');
+  gallery.innerHTML = currentArtPool.map((url,i)=>{
+    const idx = ART_URLS.indexOf(url);
+    const isFav = artFavorites.includes(url);
+    return `
+    <div class="art-card">
+      <span class="art-tag">${tags[idx]}</span>
+      <img src="${url}" alt="${titles[idx]}">
+      <div class="art-info">
+        <span class="art-title">${titles[idx]}</span>
+        <button class="art-fav ${isFav?'saved':''}" onclick="toggleFav('${url}',this)">${isFav?'❤️':'🤍'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleFav(url,btn){
+  const idx = artFavorites.indexOf(url);
+  if(idx>=0){artFavorites.splice(idx,1);btn.innerHTML='🤍';btn.classList.remove('saved');toast('已取消收藏');}
+  else{artFavorites.push(url);btn.innerHTML='❤️';btn.classList.add('saved');toast('已收藏 ❤️');}
+  localStorage.setItem('mila_art_fav', JSON.stringify(artFavorites));
+  renderFavorites();
+  renderGuardianAlerts();
+  setInterval(checkPermissionRequests, 2000);
+  setInterval(checkPermissionGranted, 2000);
+}
+function renderFavorites(){
+  const container = document.getElementById('artFavorites');
+  if(artFavorites.length===0){container.innerHTML='<div class="art-empty"><div class="empty-icon"><svg viewBox="0 0 40 40" width="40" height="40" fill="none"><circle cx="20" cy="26" r="11" fill="#F0E0C8" stroke="#8B6040" stroke-width="1.2"/><circle cx="16" cy="24" r="2" fill="#E07050"/><circle cx="24" cy="24" r="2" fill="#5090C0"/></svg></div>还没有收藏任何作品<br>点击图片上的爱心来收藏吧</div>';return;}
+  const titles = ['彩虹花园','金色调色盘','梦幻森林','温馨小屋','云端猫咪','向日葵田','魔法月夜','星空热气球'];
+  container.innerHTML = '<div class="art-gallery">'+artFavorites.map(url=>{
+    const idx = ART_URLS.indexOf(url);
+    return `
+    <div class="art-card">
+      <img src="${url}" alt="${titles[idx]}">
+      <div class="art-info">
+        <span class="art-title">${titles[idx]}</span>
+        <button class="art-fav saved" onclick="toggleFav('${url}',this)">❤️</button>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function openEditor(){
+  document.getElementById('blogEditor').classList.add('active');
+  document.getElementById('blogContent').style.display='none';
+}
+function closeEditor(){
+  document.getElementById('blogEditor').classList.remove('active');
+  document.getElementById('blogContent').style.display='block';
+  document.getElementById('blogTitle').value='';
+  document.getElementById('blogBody').value='';
+}
+function saveBlog(){
+  const title = document.getElementById('blogTitle').value.trim();
+  const body = document.getElementById('blogBody').value.trim();
+  if(!title||!body){toast('请填写标题和内容');return;}
+  blogPosts.unshift({title,body,date:new Date().toLocaleString('zh-CN')});
+  localStorage.setItem('mila_blogs', JSON.stringify(blogPosts));
+  renderBlogList();
+  closeEditor();
+  toast('文章已发布 🎉');
+}
+function renderBlogList(){
+  const container = document.getElementById('blogList');
+  if(blogPosts.length===0){container.innerHTML='<div style="text-align:center;padding:20px;color:var(--c-text-lt);font-size:13px">还没有文章<br>点击上方按钮写一篇吧</div>';return;}
+  container.innerHTML = blogPosts.map((p,i)=>`
+    <div class="blog-item" onclick="viewBlog(${i})">
+      <div class="bi-title">${p.title}</div>
+      <div class="bi-preview">${p.body}</div>
+      <div class="bi-meta"><span>📝 ${p.date}</span><span>📖 阅读</span></div>
+    </div>
+  `).join('');
+}
+function viewBlog(i){
+  const p = blogPosts[i];
+  alert(p.title+'\n\n'+p.body+'\n\n'+p.date);
+}
+
+const MILA_REPLIES = [
+  '听起来你今天心情不错呢！继续保持哦 🌟',
+  '有时候感到难过是正常的，要不要试试深呼吸？',
+  '你知道吗？每个人都会遇到困难，但你比想象中更勇敢 💪',
+  '想聊聊发生了什么吗？我在这里听着呢 👂',
+  '今天有没有什么开心的小事想分享？',
+  '我觉得你已经很棒了！相信自己 ✨',
+  '要不要试试画一幅画？把心情画出来会好很多哦 🎨',
+  '记得多喝水，好好休息，照顾好自己 🌸',
+  '你的朋友一定很喜欢你这样的小伙伴！',
+  '遇到困难的时候，记得你并不孤单，Mila 一直在 💚'
+];
+function sendChat(){
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  const container = document.getElementById('chatMessages');
+  const now = new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+  // Danger detection
+  const isDangerous = checkDangerousContent(msg);
+  if(isDangerous){
+    addGuardianLog('chat', {msg:msg, mode:'text', flagged:true});
+    addGuardianAlert('high', '检测到危险聊天内容', `孩子发送了包含危险意味的消息: "${msg.substring(0,40)}${msg.length>40?'...':''}" — 请及时关注。`);
+  }
+  container.innerHTML += `<div class="chat-bubble user slide-up">${msg}<div class="bubble-time">${now}</div></div>`;
+  input.value = '';
+  container.scrollTop = container.scrollHeight;
+  document.getElementById('chatTyping').classList.add('show');
+  setTimeout(()=>{
+    document.getElementById('chatTyping').classList.remove('show');
+    const reply = MILA_REPLIES[Math.floor(Math.random()*MILA_REPLIES.length)];
+    container.innerHTML += `<div class="chat-bubble mila slide-up">${reply}<div class="bubble-time">${now}</div></div>`;
+    container.scrollTop = container.scrollHeight;
+  }, 1200);
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+
+
+/* Town hotspots */
+let currentSpot = null;
+
+document.querySelectorAll('.town-spot').forEach(spot=>{
+  spot.addEventListener('click',function(e){
+    e.stopPropagation();
+    showTownDetail(this);
+  });
+});
+
+function showTownDetail(spot){
+  currentSpot = spot;
+  const card = document.getElementById('townDetailCard');
+  document.getElementById('tdName').textContent = spot.dataset.name;
+  document.getElementById('tdDesc').textContent = spot.dataset.desc;
+  document.getElementById('tdMore').textContent = spot.dataset.more;
+  card.classList.add('show');
+}
+
+function hideTownDetail(){
+  document.getElementById('townDetailCard').classList.remove('show');
+  currentSpot = null;
+}
+
+document.getElementById('townMap').addEventListener('click',function(e){
+  if(!e.target.closest('.town-spot') && !e.target.closest('.town-detail-card')){
+    hideTownDetail();
+  }
+});
+
+init();
+</script>
+</body>
+</html>
